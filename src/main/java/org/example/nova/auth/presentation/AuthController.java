@@ -3,10 +3,10 @@ package org.example.nova.auth.presentation;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.example.nova.auth.entity.Member;
-import org.example.nova.auth.presentation.dto.JoinRequest;
-import org.example.nova.auth.presentation.dto.LoginRequest;
-import org.example.nova.auth.service.MemberService;
+import org.example.nova.user.entity.User;
+import org.example.nova.auth.presentation.dto.request.JoinRequest;
+import org.example.nova.auth.presentation.dto.request.LoginRequest;
+import org.example.nova.user.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final MemberService memberService;
+    private final UserService userService;
 
     @GetMapping
     public String home(Model model, HttpSession session) {
@@ -27,9 +27,9 @@ public class AuthController {
         model.addAttribute("loginType", loginType);
         model.addAttribute("pageName", pageName);
 
-        Member member = (Member) session.getAttribute("member");
-        if (member != null) {
-            model.addAttribute("name", member.getName());
+        User user = (User) session.getAttribute("member");
+        if (user != null) {
+            model.addAttribute("name", user.getName());
         }
 
         return "home";  // home.html
@@ -47,7 +47,7 @@ public class AuthController {
 
     @PostMapping("/join")
     public String join(JoinRequest joinRequest) {
-        memberService.register(joinRequest);
+        userService.register(joinRequest);
         return "redirect:/oauth/login";  // 로그인 페이지로 리다이렉트
     }
 
@@ -63,9 +63,9 @@ public class AuthController {
 
     @PostMapping("/login")
     public String login(LoginRequest loginRequest, HttpSession session, Model model) {
-        Member member = memberService.authenticate(loginRequest);
-        if (member != null) {
-            session.setAttribute("member", member);
+        User user = userService.authenticate(loginRequest);
+        if (user != null) {
+            session.setAttribute("member", user);
             return "redirect:/oauth";  // 홈 페이지로 리다이렉트
         } else {
             model.addAttribute("globalError", "ID 또는 비밀번호가 잘못되었습니다.");
@@ -79,15 +79,15 @@ public class AuthController {
     public String info(Model model, HttpSession session) {
         String loginType = "oauth";
         String pageName = "마이 페이지";
-        Member member = (Member) session.getAttribute("member");
+        User user = (User) session.getAttribute("member");
 
-        if (member == null) {
+        if (user == null) {
             return "redirect:/oauth/login";
         }
 
         model.addAttribute("loginType", loginType);
         model.addAttribute("pageName", pageName);
-        model.addAttribute("member", member);
+        model.addAttribute("member", user);
         return "info";  // info.html
     }
 
@@ -95,7 +95,7 @@ public class AuthController {
     public String admin(Model model, HttpSession session) {
         String loginType = "oauth";
         String pageName = "관리자 페이지";
-        Member member = (Member) session.getAttribute("member");
+        User user = (User) session.getAttribute("member");
 
         return "redirect:/oauth";
 

@@ -2,7 +2,7 @@ package org.example.nova.auth.config;
 
 
 import lombok.RequiredArgsConstructor;
-import org.example.nova.auth.entity.MemberRole;
+import org.example.nova.user.entity.UserRole;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,7 +19,7 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/oauth/admin").hasRole(MemberRole.ADMIN.name())
+                        .requestMatchers("/oauth/admin").hasRole(UserRole.ADMIN.name())
                         .requestMatchers("/oauth/info").authenticated()
                         .anyRequest().permitAll()
                 );

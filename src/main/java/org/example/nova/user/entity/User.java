@@ -1,4 +1,4 @@
-package org.example.nova.auth.entity;
+package org.example.nova.user.entity;
 
 
 import jakarta.persistence.*;
@@ -10,7 +10,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Member {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,8 +19,8 @@ public class Member {
     private String name;
     private String password;
 
-    @Enumerated
-    private MemberRole role;
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 
     private String provider;
 

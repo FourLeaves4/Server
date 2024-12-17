@@ -1,6 +1,6 @@
 package org.example.nova.auth.details;
 
-import org.example.nova.auth.entity.Member;
+import org.example.nova.user.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -9,18 +9,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-public class CustomOauth2UserDetails implements UserDetails, OAuth2User {
-    private Member member;
+public class CustormOAuth2UserDetails implements UserDetails, OAuth2User {
+    private User user;
     private Map<String, Object> attributes;
 
-    public void CustomUserDetails(Member member, Map<String, Object> attributes) {
+    public void CustomUserDetails(User user, Map<String, Object> attributes) {
 
-        this.member = member;
+        this.user = user;
         this.attributes = attributes;
     }
 
-    public CustomOauth2UserDetails(Member member, Map<String, Object> attributes) {
-        this.member = member;
+    public CustormOAuth2UserDetails(User user, Map<String, Object> attributes) {
+        this.user = user;
     }
 
 
@@ -40,7 +40,7 @@ public class CustomOauth2UserDetails implements UserDetails, OAuth2User {
         collection.add(new GrantedAuthority() {
             @Override
             public String getAuthority() {
-                return member.getRole().name();
+                return user.getRole().name();
             }
         });
 
@@ -49,12 +49,12 @@ public class CustomOauth2UserDetails implements UserDetails, OAuth2User {
 
     @Override
     public String getPassword() {
-        return member.getPassword();
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return member.getLoginId();
+        return user.getLoginId();
     }
 
     @Override
