@@ -19,7 +19,7 @@ public class User {
     private String name;
     private String password;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private UserRole role;
 
     private String provider;
