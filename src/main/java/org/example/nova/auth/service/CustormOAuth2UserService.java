@@ -4,7 +4,7 @@ package org.example.nova.auth.service;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.nova.auth.details.CustomOauth2UserDetails;
+import org.example.nova.auth.details.CustormOAuth2UserDetails;
 import org.example.nova.auth.details.GoogleUserDetails;
 import org.example.nova.user.entity.User;
 import org.example.nova.user.entity.UserRole;
@@ -21,7 +21,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class CustormOauth2UserService extends DefaultOAuth2UserService {
+public class CustormOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
 
@@ -67,6 +67,6 @@ public class CustormOauth2UserService extends DefaultOAuth2UserService {
             session.setAttribute("member", user);
         }
 
-        return new CustomOauth2UserDetails(user, oAuth2User.getAttributes());
+        return new CustormOAuth2UserDetails(user, oAuth2User.getAttributes());
     }
 }
