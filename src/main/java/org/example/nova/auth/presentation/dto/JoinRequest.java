@@ -5,8 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.example.nova.auth.entity.Member;
-import org.example.nova.auth.entity.MemberRole;
+import org.example.nova.user.entity.User;
+import org.example.nova.user.entity.UserRole;
 
 @Getter
 @Setter
@@ -22,12 +22,12 @@ public class JoinRequest {
     @NotBlank(message = "이름을 입력하세요.")
     private String name;
 
-    public Member toEntity(){
-        return Member.builder()
+    public User toEntity(){
+        return User.builder()
                 .loginId(this.loginId)
                 .password(this.password)
                 .name(this.name)
-                .role(MemberRole.USER)
+                .role(UserRole.USER)
                 .build();
     }
 }
