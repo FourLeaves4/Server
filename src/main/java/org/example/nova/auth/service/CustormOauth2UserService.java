@@ -6,10 +6,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.nova.auth.details.CustomOauth2UserDetails;
 import org.example.nova.auth.details.GoogleUserDetails;
-import org.example.nova.auth.entity.Member;
-import org.example.nova.auth.entity.MemberRole;
+import org.example.nova.user.entity.User;
+import org.example.nova.user.entity.UserRole;
 import org.example.nova.auth.info.OAuth2UserInfo;
-import org.example.nova.auth.repository.MemberRepository;
+import org.example.nova.user.repository.UserRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -23,7 +23,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @RequiredArgsConstructor
 public class CustormOauth2UserService extends DefaultOAuth2UserService {
 
-    private final MemberRepository memberRepository;
+    private final UserRepository userRepository;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -45,28 +45,28 @@ public class CustormOauth2UserService extends DefaultOAuth2UserService {
         String loginId = provider + "_" + providerId;
         String name = oAuth2UserInfo.getName();
 
-        Member findMember = memberRepository.findByLoginId(loginId);
-        Member member;
+        User findUser = userRepository.findByLoginId(loginId);
+        User user;
 
-        if (findMember == null) {
-            member = Member.builder()
+        if (findUser == null) {
+            user = User.builder()
                     .loginId(loginId)
                     .name(name)
                     .provider(provider)
                     .providerId(providerId)
-                    .role(MemberRole.USER)
+                    .role(UserRole.USER)
                     .build();
-            memberRepository.save(member);
+            userRepository.save(user);
         } else{
-            member = findMember;
+            user = findUser;
         }
 
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attributes != null) {
             HttpSession session = attributes.getRequest().getSession();
-            session.setAttribute("member", member);
+            session.setAttribute("member", user);
         }
 
-        return new CustomOauth2UserDetails(member, oAuth2User.getAttributes());
+        return new CustomOauth2UserDetails(user, oAuth2User.getAttributes());
     }
 }
