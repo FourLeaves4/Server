@@ -1,4 +1,4 @@
-package org.example.nova.auth.presentation.dto;
+package org.example.nova.auth.presentation.dto.request;
 
 
 import lombok.Getter;
