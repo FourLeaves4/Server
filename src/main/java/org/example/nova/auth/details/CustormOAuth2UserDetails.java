@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-public class CustomOauth2UserDetails implements UserDetails, OAuth2User {
+public class CustormOAuth2UserDetails implements UserDetails, OAuth2User {
     private User user;
     private Map<String, Object> attributes;
 
@@ -19,7 +19,7 @@ public class CustomOauth2UserDetails implements UserDetails, OAuth2User {
         this.attributes = attributes;
     }
 
-    public CustomOauth2UserDetails(User user, Map<String, Object> attributes) {
+    public CustormOAuth2UserDetails(User user, Map<String, Object> attributes) {
         this.user = user;
     }
 
