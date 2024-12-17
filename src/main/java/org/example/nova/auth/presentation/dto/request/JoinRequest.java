@@ -1,4 +1,4 @@
-package org.example.nova.auth.presentation.dto;
+package org.example.nova.auth.presentation.dto.request;
 
 
 import jakarta.validation.constraints.NotBlank;
