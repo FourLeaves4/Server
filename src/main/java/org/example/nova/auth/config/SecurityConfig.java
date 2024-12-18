@@ -19,29 +19,29 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/oauth/admin").hasRole(UserRole.ADMIN.name())
-                        .requestMatchers("/oauth/info").authenticated()
+                        .requestMatchers("/auth/admin").hasRole(UserRole.ADMIN.name())
+                        .requestMatchers("/auth/info").authenticated()
                         .anyRequest().permitAll()
                 );
 
         http
-                .formLogin((auth) -> auth.loginPage("/oauth/login")
-                        .loginProcessingUrl("/oauth/loginProc")
+                .formLogin((auth) -> auth.loginPage("/auth/login")
+                        .loginProcessingUrl("/auth/loginProc")
                         .usernameParameter("loginId")
                         .passwordParameter("password")
-                        .defaultSuccessUrl("/oauth")
-                        .failureUrl("/oauth")
+                        .defaultSuccessUrl("/auth")
+                        .failureUrl("/auth")
                         .permitAll());
 
         http
-                .oauth2Login((auth) -> auth.loginPage("/oauth/login")
-                        .defaultSuccessUrl("/oauth")
-                        .failureUrl("/oauth/login")
+                .oauth2Login((auth) -> auth.loginPage("/auth/login")
+                        .defaultSuccessUrl("/auth")
+                        .failureUrl("/auth/login")
                         .permitAll());
 
         http
                 .logout((auth) -> auth
-                        .logoutUrl("/oauth/logout"));
+                        .logoutUrl("/auth/logout"));
 
         http
                 .csrf((auth) -> auth.disable());
