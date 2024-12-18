@@ -62,7 +62,10 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
                 log.info("Saving new user to the database: {}", user);
             }
 
+            log.info("Saving user: {}", user);
             userRepository.save(user);
+            log.info("User saved successfully");
+
             return new CustormOAuth2UserDetails(user, oAuth2User.getAttributes());
 
         } catch (Exception e) {
