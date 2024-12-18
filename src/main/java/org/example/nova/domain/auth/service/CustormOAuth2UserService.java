@@ -4,11 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.nova.domain.auth.details.CustormOAuth2UserDetails;
 import org.example.nova.domain.auth.details.GoogleUserDetails;
+import org.example.nova.domain.auth.info.OAuth2UserInfo;
 import org.example.nova.domain.user.entity.User;
 import org.example.nova.domain.user.entity.UserRole;
-import org.example.nova.domain.auth.info.OAuth2UserInfo;
 import org.example.nova.domain.user.repository.UserRepository;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
@@ -28,44 +27,71 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        log.info("Starting OAuth2 User Login Process");
+
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
-        log.info("getAttributes : {}", oAuth2User.getAttributes());
+        try {
+            log.info("Received OAuth2 User Attributes: {}", oAuth2User.getAttributes());
 
-        OAuth2AuthorizedClient oAuth2AuthorizedClient = authorizedClientService
-                .loadAuthorizedClient(
-                        userRequest.getClientRegistration().getRegistrationId(),
-                        SecurityContextHolder.getContext().getAuthentication().getName()
-                );
+            // OAuth2 Client Information
+            String clientRegistrationId = userRequest.getClientRegistration().getRegistrationId();
+            String accessToken = userRequest.getAccessToken().getTokenValue();
+            log.info("Client Registration ID: {}", clientRegistrationId);
+            log.info("Access Token: {}", accessToken);
 
-        String accessToken = userRequest.getAccessToken().getTokenValue();
-        String refreshToken = oAuth2AuthorizedClient != null && oAuth2AuthorizedClient
-                .getRefreshToken() != null ? oAuth2AuthorizedClient.getRefreshToken().getTokenValue() : null;
+            // SecurityContext에서 현재 사용자 가져오기
+            String principalName = SecurityContextHolder.getContext().getAuthentication().getName();
+            log.info("Principal Name: {}", principalName);
 
-        if (accessToken == null || refreshToken == null) {
-            log.error("Access token or refresh token is null");
-            throw new IllegalArgumentException("Access token or refresh token is null");
-        }
+            OAuth2AuthorizedClient oAuth2AuthorizedClient = authorizedClientService.loadAuthorizedClient(
+                    clientRegistrationId,
+                    principalName
+            );
 
-        OAuth2UserInfo oAuth2UserInfo = new GoogleUserDetails(oAuth2User.getAttributes());
-        String loginId = userRequest.getClientRegistration().getRegistrationId() + "_" + oAuth2UserInfo.getProviderId();
+            String refreshToken = null;
+            if (oAuth2AuthorizedClient != null && oAuth2AuthorizedClient.getRefreshToken() != null) {
+                refreshToken = oAuth2AuthorizedClient.getRefreshToken().getTokenValue();
+                log.info("Refresh Token: {}", refreshToken);
+            } else {
+                log.warn("Refresh Token is null");
+            }
 
-        User user = userRepository.findByLoginId(loginId);
-        if (user == null) {
-            user = User.builder()
-                    .loginId(loginId)
-                    .name(oAuth2UserInfo.getName())
-                    .provider(userRequest.getClientRegistration().getRegistrationId())
-                    .providerId(oAuth2UserInfo.getProviderId())
-                    .refreshToken(refreshToken)
-                    .role(UserRole.USER)
-                    .build();
+            // Extract User Information
+            OAuth2UserInfo oAuth2UserInfo = new GoogleUserDetails(oAuth2User.getAttributes());
+            String provider = clientRegistrationId;
+            String providerId = oAuth2UserInfo.getProviderId();
+            String loginId = provider + "_" + providerId;
+            String name = oAuth2UserInfo.getName();
+
+            log.info("OAuth2 User Info - Provider: {}, Provider ID: {}, Login ID: {}, Name: {}",
+                    provider, providerId, loginId, name);
+
+            // Save or Update User
+            User user = userRepository.findByLoginId(loginId);
+            if (user == null) {
+                user = User.builder()
+                        .loginId(loginId)
+                        .name(name)
+                        .provider(provider)
+                        .providerId(providerId)
+                        .refreshToken(refreshToken)
+                        .role(UserRole.USER)
+                        .build();
+                log.info("Saving new user to the database: {}", user);
+            } else {
+                log.info("Updating existing user: {}", user);
+                user.setRefreshToken(refreshToken);
+            }
+
             userRepository.save(user);
-        } else {
-            user.setRefreshToken(refreshToken);
-            userRepository.save(user);
-        }
+            log.info("User successfully saved or updated: {}", user);
 
-        return new CustormOAuth2UserDetails(user, oAuth2User.getAttributes());
+            return new CustormOAuth2UserDetails(user, oAuth2User.getAttributes());
+
+        } catch (Exception e) {
+            log.error("Error during OAuth2 login process", e);
+            throw new OAuth2AuthenticationException("Failed to process OAuth2 login: " + e.getMessage());
+        }
     }
 }
