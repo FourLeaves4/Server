@@ -44,10 +44,11 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
             String principalName = SecurityContextHolder.getContext().getAuthentication().getName();
             log.info("Principal Name: {}", principalName);
 
-            OAuth2AuthorizedClient oAuth2AuthorizedClient = authorizedClientService.loadAuthorizedClient(
-                    clientRegistrationId,
-                    principalName
-            );
+            OAuth2AuthorizedClient oAuth2AuthorizedClient = authorizedClientService
+                    .loadAuthorizedClient(
+                            userRequest.getClientRegistration().getRegistrationId(),
+                            null  // principalName 대신 null을 사용
+                    );
 
             String refreshToken = null;
             if (oAuth2AuthorizedClient != null && oAuth2AuthorizedClient.getRefreshToken() != null) {
@@ -56,6 +57,7 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
             } else {
                 log.warn("Refresh Token is null");
             }
+
 
             // Extract User Information
             OAuth2UserInfo oAuth2UserInfo = new GoogleUserDetails(oAuth2User.getAttributes());
