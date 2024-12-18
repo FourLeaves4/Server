@@ -1,10 +1,10 @@
-package org.example.nova.user.service;
+package org.example.nova.domain.user.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.example.nova.user.entity.User;
-import org.example.nova.auth.presentation.LoginRequestDto;
-import org.example.nova.user.repository.UserRepository;
+import org.example.nova.domain.user.entity.User;
+import org.example.nova.domain.auth.presentation.LoginRequestDto;
+import org.example.nova.domain.user.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
