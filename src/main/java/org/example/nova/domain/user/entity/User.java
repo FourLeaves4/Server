@@ -20,7 +20,7 @@ public class User {
     private String password;
     private String refreshToken;
 
-    @Column(name = "access_token")
+    @Column(name = "access_token", length = 512)
     private String accessToken;
 
     private String provider;
