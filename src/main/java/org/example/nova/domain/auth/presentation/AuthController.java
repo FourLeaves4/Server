@@ -28,28 +28,6 @@ public class AuthController {
 
     @PostMapping("/refreshToken")
     public ResponseEntity<String> refreshAccessToken(@RequestHeader("Authorization") String refreshToken) {
-        log.info("refreshToken endpoint called with token: {}", refreshToken);
-        refreshToken = refreshToken.replace("Bearer ", "");
-
-        User user = userRepository.findByRefreshToken(refreshToken);
-        if (user == null) {
-            log.error("User not found with refresh token: {}", refreshToken);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("잘못된 refresh token");
-        }
-
-        try {
-            String newAccessToken = tokenService.refreshAccessToken(refreshToken);
-            log.info("New access token generated: {}", newAccessToken);
-            return ResponseEntity.ok(newAccessToken);
-        } catch (Exception e) {
-            log.error("Failed to refresh access token", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("토큰 갱신 실패");
-        }
-    }
-
-    /*
-    @PostMapping("/refreshToken")
-    public ResponseEntity<String> refreshAccessToken(@RequestHeader("Authorization") String refreshToken) {
         refreshToken = refreshToken.replace("Bearer ", "");
 
         User user = userRepository.findByRefreshToken(refreshToken);
@@ -66,8 +44,6 @@ public class AuthController {
         }
 
     }
-
-     */
 
     @GetMapping
     public String home(Model model, HttpSession session) {
