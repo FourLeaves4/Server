@@ -4,8 +4,6 @@ package org.example.nova.auth.presentation;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.example.nova.user.entity.User;
-import org.example.nova.auth.presentation.dto.request.JoinRequest;
-import org.example.nova.auth.presentation.dto.request.LoginRequest;
 import org.example.nova.user.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,22 +31,6 @@ public class AuthController {
         }
 
         return "home";  // home.html
-    }
-
-    @GetMapping("/join")
-    public String joinForm(Model model) {
-        String loginType = "auth";
-        String pageName = "회원 가입";
-        model.addAttribute("loginType", loginType);
-        model.addAttribute("pageName", pageName);
-        model.addAttribute("joinRequest", new JoinRequest());
-        return "join";  // join.html
-    }
-
-    @PostMapping("/join")
-    public String join(JoinRequest joinRequest) {
-        userService.register(joinRequest);
-        return "redirect:/oauth/login";  // 로그인 페이지로 리다이렉트
     }
 
     @GetMapping("/login")
