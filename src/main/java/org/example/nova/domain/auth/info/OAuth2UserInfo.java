@@ -1,4 +1,4 @@
-package org.example.nova.auth.info;
+package org.example.nova.domain.auth.info;
 
 public interface OAuth2UserInfo {
     String getProvider();
