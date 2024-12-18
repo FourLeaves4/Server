@@ -1,6 +1,6 @@
-package org.example.nova.auth.details;
+package org.example.nova.domain.auth.details;
 
-import org.example.nova.user.entity.User;
+import org.example.nova.domain.user.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
