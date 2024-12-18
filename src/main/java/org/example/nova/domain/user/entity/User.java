@@ -7,7 +7,7 @@ import lombok.*;
 @Entity
 @Builder
 @Getter
-@Setter
+@Table(name = "user")
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
@@ -19,7 +19,10 @@ public class User {
     private String name;
     private String password;
     private String refreshToken;
+
+    @Column(name = "access_token")
     private String accessToken;
+
     private String provider;
     private String providerId;
 
