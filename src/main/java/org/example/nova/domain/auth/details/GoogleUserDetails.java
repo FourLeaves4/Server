@@ -1,6 +1,6 @@
-package org.example.nova.auth.details;
+package org.example.nova.domain.auth.details;
 
-import org.example.nova.auth.info.OAuth2UserInfo;
+import org.example.nova.domain.auth.info.OAuth2UserInfo;
 
 import java.util.Map;
 
