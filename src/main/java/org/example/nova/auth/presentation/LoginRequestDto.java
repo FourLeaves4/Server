@@ -1,4 +1,4 @@
-package org.example.nova.auth.presentation.dto.request;
+package org.example.nova.auth.presentation;
 
 
 import lombok.Getter;
@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class LoginRequest {
+public class LoginRequestDto {
     private String loginId;
     private String password;
 }
