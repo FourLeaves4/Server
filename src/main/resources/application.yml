@@ -14,12 +14,14 @@ spring:
             redirect-uri: "{baseUrl}/login/oauth2/code/google"
 
   datasource:
-    url: jdbc:mysql://localhost:3306/nova_db?serverTimezone=Asia/Seoul
+    url: ${DB_URL}
     username: root
-    password: KimHanJu080210@
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
+    password: ${DB_PASSWORD}
+    driver-class-name: org.mariadb.jdbc.Driver
     jpa:
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.MariaDBDialect
       hibernate:
-        ddl-auto: create
+        ddl-auto: update
       show-sql: true
