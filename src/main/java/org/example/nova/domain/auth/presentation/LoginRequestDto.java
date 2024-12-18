@@ -1,4 +1,4 @@
-package org.example.nova.auth.presentation;
+package org.example.nova.domain.auth.presentation;
 
 
 import lombok.Getter;
