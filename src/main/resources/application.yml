@@ -11,7 +11,7 @@ spring:
             scope:
               - email
               - profile
-            redirect-uri: "https://{baseHost}{basePort}/login/oauth2/code/google"
+            redirect-uri: "https://port-0-server-lz1cq56f81af005d.sel4.cloudtype.app/login/oauth2/code/google"
 
   datasource:
     url: ${DB_URL}
