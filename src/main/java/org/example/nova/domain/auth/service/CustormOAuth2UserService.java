@@ -32,44 +32,31 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
 
         log.info("getAttributes : {}", oAuth2User.getAttributes());
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String principalName = authentication.getName();
-
         OAuth2AuthorizedClient oAuth2AuthorizedClient = authorizedClientService
                 .loadAuthorizedClient(
                         userRequest.getClientRegistration().getRegistrationId(),
-                        principalName
+                        SecurityContextHolder.getContext().getAuthentication().getName()
                 );
 
-        if (oAuth2AuthorizedClient != null) {
-            String refreshToken = oAuth2AuthorizedClient.getRefreshToken() != null
-                    ? oAuth2AuthorizedClient.getRefreshToken().getTokenValue()
-                    : null;
+        String accessToken = userRequest.getAccessToken().getTokenValue();
+        String refreshToken = oAuth2AuthorizedClient != null && oAuth2AuthorizedClient
+                .getRefreshToken() != null ? oAuth2AuthorizedClient.getRefreshToken().getTokenValue() : null;
 
-            log.info("Refresh token : {}", refreshToken);
+        if (accessToken == null || refreshToken == null) {
+            log.error("Access token or refresh token is null");
+            throw new IllegalArgumentException("Access token or refresh token is null");
         }
 
         OAuth2UserInfo oAuth2UserInfo = new GoogleUserDetails(oAuth2User.getAttributes());
-
-        String provider = userRequest.getClientRegistration().getRegistrationId();
-        String providerId = oAuth2UserInfo.getProviderId();
-        String loginId = provider + "_" + providerId;
-        String name = oAuth2UserInfo.getName();
-        String accessToken = userRequest.getAccessToken().getTokenValue();
-        String refreshToken = oAuth2AuthorizedClient != null && oAuth2AuthorizedClient.getRefreshToken() != null
-                ? oAuth2AuthorizedClient.getRefreshToken().getTokenValue()
-                : null;
-
-        log.info("Access token : {}", accessToken);
-        log.info("Refresh token : {}", refreshToken);
+        String loginId = userRequest.getClientRegistration().getRegistrationId() + "_" + oAuth2UserInfo.getProviderId();
 
         User user = userRepository.findByLoginId(loginId);
         if (user == null) {
             user = User.builder()
                     .loginId(loginId)
-                    .name(name)
-                    .provider(provider)
-                    .providerId(providerId)
+                    .name(oAuth2UserInfo.getName())
+                    .provider(userRequest.getClientRegistration().getRegistrationId())
+                    .providerId(oAuth2UserInfo.getProviderId())
                     .refreshToken(refreshToken)
                     .role(UserRole.USER)
                     .build();
