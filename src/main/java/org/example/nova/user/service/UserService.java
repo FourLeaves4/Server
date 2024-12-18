@@ -3,8 +3,7 @@ package org.example.nova.user.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.nova.user.entity.User;
-import org.example.nova.user.entity.UserRole;
-import org.example.nova.auth.presentation.LoginRequest;
+import org.example.nova.auth.presentation.LoginRequestDto;
 import org.example.nova.user.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,14 +21,14 @@ public class UserService {
         return userRepository.existsByLoginId(loginId);
     }
 
-    public User login(LoginRequest loginRequest) {
-        User findUser = userRepository.findByLoginId(loginRequest.getLoginId());
+    public User login(LoginRequestDto loginRequestDto) {
+        User findUser = userRepository.findByLoginId(loginRequestDto.getLoginId());
 
         if(findUser == null){
             return null;
         }
 
-        if (!findUser.getPassword().equals(loginRequest.getPassword())) {
+        if (!findUser.getPassword().equals(loginRequestDto.getPassword())) {
             return null;
         }
 
@@ -44,9 +43,9 @@ public class UserService {
 
     }
 
-    public User authenticate(LoginRequest loginRequest) {
-        String loginId = loginRequest.getLoginId();
-        String password = loginRequest.getPassword();
+    public User authenticate(LoginRequestDto loginRequestDto) {
+        String loginId = loginRequestDto.getLoginId();
+        String password = loginRequestDto.getPassword();
 
         User user = userRepository.findByLoginId(loginId);
 

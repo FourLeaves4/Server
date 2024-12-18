@@ -8,7 +8,6 @@ import org.example.nova.user.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
@@ -34,27 +33,8 @@ public class AuthController {
     }
 
     @GetMapping("/login")
-    public String loginForm(Model model) {
-        String loginType = "auth";
-        String pageName = "로그인";
-        model.addAttribute("loginType", loginType);
-        model.addAttribute("pageName", pageName);
-        model.addAttribute("loginRequest", new LoginRequest());
-        return "login";  // login.html
-    }
-
-    @PostMapping("/login")
-    public String login(LoginRequest loginRequest, HttpSession session, Model model) {
-        User user = userService.authenticate(loginRequest);
-        if (user != null) {
-            session.setAttribute("member", user);
-            return "redirect:/auth";  // 홈 페이지로 리다이렉트
-        } else {
-            model.addAttribute("globalError", "ID 또는 비밀번호가 잘못되었습니다.");
-            model.addAttribute("loginType", "auth");
-            model.addAttribute("pageName", "로그인");
-            return "login";  // login.html
-        }
+    public String loginRedirect() {
+        return "redirect:/oauth2/authorization/google";
     }
 
     @GetMapping("/info")
@@ -88,5 +68,4 @@ public class AuthController {
         session.invalidate();
         return "redirect:/oauth";
     }
-
 }
