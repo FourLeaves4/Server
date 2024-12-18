@@ -1,4 +1,4 @@
-package org.example.nova.user.entity;
+package org.example.nova.domain.user.entity;
 
 
 import jakarta.persistence.*;
@@ -18,11 +18,12 @@ public class User {
     private String loginId;
     private String name;
     private String password;
+    private String refreshToken;
+    private String accessToken;
+    private String provider;
+    private String providerId;
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    private String provider;
-
-    private String providerId;
 }
