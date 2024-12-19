@@ -35,8 +35,13 @@ public class CustomAuthorizationRequestResolver implements OAuth2AuthorizationRe
         if (authorizationRequest == null) {
             return null;
         }
-        Builder builder = OAuth2AuthorizationRequest.from(authorizationRequest);
-        builder.additionalParameters(params -> params.put("access_type", "offline"));
+
+        OAuth2AuthorizationRequest.Builder builder = OAuth2AuthorizationRequest.from(authorizationRequest);
+        builder.additionalParameters(params -> {
+            params.put("access_type", "offline");
+            params.put("prompt", "consent");
+        });
         return builder.build();
     }
+
 }
