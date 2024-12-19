@@ -14,7 +14,6 @@ public class CustormOAuth2UserDetails implements UserDetails, OAuth2User {
     private Map<String, Object> attributes;
 
     public void CustomUserDetails(User user, Map<String, Object> attributes) {
-
         this.user = user;
         this.attributes = attributes;
     }
