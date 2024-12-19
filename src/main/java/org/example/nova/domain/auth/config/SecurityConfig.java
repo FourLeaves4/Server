@@ -19,6 +19,11 @@ public class SecurityConfig {
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
     @Bean
+    public HttpSessionOAuth2AuthorizationRequestRepository authorizationRequestRepository() {
+        return new HttpSessionOAuth2AuthorizationRequestRepository();
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
@@ -53,7 +58,6 @@ public class SecurityConfig {
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 );
 
-
         return http.build();
     }
 
@@ -61,10 +65,4 @@ public class SecurityConfig {
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-    @Bean
-    public HttpSessionOAuth2AuthorizationRequestRepository authorizationRequestRepository() {
-        return new HttpSessionOAuth2AuthorizationRequestRepository();
-    }
-
 }
