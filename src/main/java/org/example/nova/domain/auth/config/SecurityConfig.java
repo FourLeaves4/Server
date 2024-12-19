@@ -8,9 +8,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -23,7 +26,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/admin").hasRole(UserRole.ADMIN.name())
+                        .requestMatchers("/auth/admin").hasRole("ADMIN")
                         .requestMatchers("/auth/info").authenticated()
                         .anyRequest().permitAll()
                 )
@@ -42,6 +45,7 @@ public class SecurityConfig {
                         .failureUrl("/auth/login?error=true")
                         .failureHandler(new CustomAuthenticationFailureHandler())
                         .authorizationEndpoint(endpoint -> endpoint
+                                .authorizationRequestRepository(authorizationRequestRepository())
                                 .authorizationRequestResolver(
                                         new CustomAuthorizationRequestResolver(
                                                 clientRegistrationRepository,
@@ -51,7 +55,9 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .logout(auth -> auth.logoutUrl("/auth/logout"))
-                .csrf(auth -> auth.disable());
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                );
 
         return http.build();
     }
@@ -59,6 +65,11 @@ public class SecurityConfig {
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public HttpSessionOAuth2AuthorizationRequestRepository authorizationRequestRepository() {
+        return new HttpSessionOAuth2AuthorizationRequestRepository();
     }
 
 }
