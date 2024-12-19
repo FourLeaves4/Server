@@ -18,6 +18,10 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         log.error("Authentication failed: {}", exception.getMessage());
-        super.onAuthenticationFailure(request, response, exception);
+
+        // JSON 응답 반환 (프론트엔드가 JSON을 기대하는 경우)
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.getWriter().write("{\"error\": \"" + exception.getMessage() + "\"}");
     }
 }
