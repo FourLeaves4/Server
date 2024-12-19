@@ -3,6 +3,7 @@ package org.example.nova.domain.auth.config;
 
 import lombok.RequiredArgsConstructor;
 import org.example.nova.domain.user.entity.UserRole;
+import org.example.nova.global.verifier.CustomAuthenticationFailureHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -39,6 +40,7 @@ public class SecurityConfig {
                         .loginPage("/auth/login")
                         .defaultSuccessUrl("/auth", true)
                         .failureUrl("/auth/login?error=true")
+                        .failureHandler(new CustomAuthenticationFailureHandler())
                         .authorizationEndpoint(endpoint -> endpoint
                                 .authorizationRequestResolver(
                                         new CustomAuthorizationRequestResolver(
