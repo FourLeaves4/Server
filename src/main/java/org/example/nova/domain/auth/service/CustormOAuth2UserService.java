@@ -26,7 +26,6 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-
         log.info("Starting OAuth2 User Login Process");
 
         OAuth2User oAuth2User = super.loadUser(userRequest);
@@ -36,12 +35,7 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
 
             String clientRegistrationId = userRequest.getClientRegistration().getRegistrationId();
             String accessToken = userRequest.getAccessToken().getTokenValue();
-            String refreshToken = userRequest.getAdditionalParameters()
-                            .containsKey("refresh_token") ? (String) userRequest.getAdditionalParameters().get("refresh_token") : null;
-
-            log.info("Client Registration ID: {}", clientRegistrationId);
-            log.info("Access Token: {}", accessToken);
-            log.info("Refresh Token: {}", refreshToken);
+            String refreshToken = (String) userRequest.getAdditionalParameters().get("refresh_token");
 
             OAuth2UserInfo oAuth2UserInfo = new GoogleUserDetails(oAuth2User.getAttributes());
             String provider = clientRegistrationId;
@@ -72,18 +66,8 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
                 log.info("Updating existing user with new tokens.");
             }
 
-            try {
-                userRepository.save(user);
-                log.info("User saved successfully: {}", user);
-            } catch (Exception e) {
-                log.error("Failed to save user to DB", e);
-
-                OAuth2Error error = new OAuth2Error(
-                        "database_save_error",
-                        "Failed to save user to database",
-                        null
-                );
-            }
+            userRepository.save(user);
+            log.info("User saved successfully: {}", user);
 
             return new CustormOAuth2UserDetails(user, oAuth2User.getAttributes());
 
