@@ -42,7 +42,6 @@ public class SecurityConfig {
                         .failureHandler(customAuthenticationFailureHandler)
                         .authorizationEndpoint(endpoint -> endpoint
                                 .authorizationRequestRepository(authorizationRequestRepository())
-                                .baseUri("/oauth2/authorization")
                         )
                         .permitAll()
                 )
@@ -53,6 +52,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 );
+
 
         return http.build();
     }
@@ -66,4 +66,5 @@ public class SecurityConfig {
     public HttpSessionOAuth2AuthorizationRequestRepository authorizationRequestRepository() {
         return new HttpSessionOAuth2AuthorizationRequestRepository();
     }
+
 }
