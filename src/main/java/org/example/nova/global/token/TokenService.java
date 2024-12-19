@@ -31,6 +31,7 @@ public class TokenService {
         requestBody.put("grant_type", "refresh_token");
 
         try {
+            RestTemplate restTemplate = new RestTemplate();
             Map<String, Object> response = restTemplate.postForObject(googleTokenUrl, requestBody, Map.class);
             return (String) response.get("access_token");
         } catch (Exception e) {
