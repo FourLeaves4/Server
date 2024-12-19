@@ -33,13 +33,15 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
         try {
             log.info("Received OAuth2 User Attributes: {}", oAuth2User.getAttributes());
 
-            // OAuth2 Client Information
             String clientRegistrationId = userRequest.getClientRegistration().getRegistrationId();
             String accessToken = userRequest.getAccessToken().getTokenValue();
+            String refreshToken = userRequest.getAdditionalParameters()
+                            .containsKey("refresh_token") ? (String) userRequest.getAdditionalParameters().get("refresh_token") : null;
+
             log.info("Client Registration ID: {}", clientRegistrationId);
             log.info("Access Token: {}", accessToken);
+            log.info("Refresh Token: {}", refreshToken);
 
-            // Extract User Information
             OAuth2UserInfo oAuth2UserInfo = new GoogleUserDetails(oAuth2User.getAttributes());
             String provider = clientRegistrationId;
             String providerId = oAuth2UserInfo.getProviderId();
@@ -49,22 +51,28 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
             log.info("OAuth2 User Info - Provider: {}, Provider ID: {}, Login ID: {}, Name: {}",
                     provider, providerId, loginId, name);
 
-            // Save or Update User
             User user = userRepository.findByLoginId(loginId);
             if (user == null) {
                 user = User.builder()
                         .loginId(loginId)
                         .name(name)
+                        .accessToken(accessToken)
+                        .refreshToken(refreshToken)
                         .provider(provider)
                         .providerId(providerId)
                         .role(UserRole.USER)
                         .build();
                 log.info("Saving new user to the database: {}", user);
+            } else {
+                user.setAccessToken(accessToken);
+                if (refreshToken != null) {
+                    user.setRefreshToken(refreshToken);
+                }
+                log.info("Updating existing user with new tokens.");
             }
 
-            log.info("Saving user: {}", user);
             userRepository.save(user);
-            log.info("User saved successfully");
+            log.info("User saved successfully: {}", user);
 
             return new CustormOAuth2UserDetails(user, oAuth2User.getAttributes());
 
