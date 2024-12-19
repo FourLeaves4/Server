@@ -77,6 +77,12 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
                 log.info("User saved successfully: {}", user);
             } catch (Exception e) {
                 log.error("Failed to save user to DB", e);
+
+                OAuth2Error error = new OAuth2Error(
+                        "database_save_error",
+                        "Failed to save user to database",
+                        null
+                );
             }
 
             return new CustormOAuth2UserDetails(user, oAuth2User.getAttributes());
