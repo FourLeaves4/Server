@@ -33,6 +33,11 @@ public class TokenService {
         try {
             RestTemplate restTemplate = new RestTemplate();
             Map<String, Object> response = restTemplate.postForObject(googleTokenUrl, requestBody, Map.class);
+
+            if (response == null || !response.containsKey("access_token")) {
+                throw new RuntimeException("Invalid response from Google token endpoint");
+            }
+
             return (String) response.get("access_token");
         } catch (Exception e) {
             throw new RuntimeException("Access token 갱신 실패", e);
