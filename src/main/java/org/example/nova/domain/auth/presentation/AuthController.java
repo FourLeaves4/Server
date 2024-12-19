@@ -81,6 +81,16 @@ public class AuthController {
         return ResponseEntity.ok(user);
     }
 
+    @GetMapping("/admin")
+    public String admin(Model model, HttpSession session) {
+        String loginType = "auth";
+        String pageName = "관리자 페이지";
+        User user = (User) session.getAttribute("member");
+
+        return "redirect:/oauth";
+
+    }
+
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
