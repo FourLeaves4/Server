@@ -2,9 +2,9 @@ package org.example.nova.global.token;
 
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +14,7 @@ import java.util.Map;
 public class TokenService {
 
     private final String googleTokenUrl = "https://oauth2.googleapis.com/token";
+    private final RestTemplate restTemplate = new RestTemplate();
 
     @Value("${GOOGLE_CLIENT_ID}")
     private String clientId;
@@ -21,7 +22,6 @@ public class TokenService {
     @Value("${GOOGLE_CLIENT_SECRET}")
     private String clientSecret;
 
-    private final RestTemplate restTemplate = new RestTemplate();
 
     public String refreshAccessToken(String refreshToken) {
         Map<String, String> requestBody = new HashMap<>();
@@ -32,9 +32,6 @@ public class TokenService {
 
         try {
             Map<String, Object> response = restTemplate.postForObject(googleTokenUrl, requestBody, Map.class);
-            if (response == null || !response.containsKey("access_token")) {
-                throw new RuntimeException("Invalid response from Google token endpoint");
-            }
             return (String) response.get("access_token");
         } catch (Exception e) {
             throw new RuntimeException("Access token 갱신 실패", e);
