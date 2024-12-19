@@ -1,33 +1,26 @@
 package org.example.nova.domain.auth.config;
 
 import lombok.RequiredArgsConstructor;
-import org.example.nova.global.verifier.CustomAuthenticationFailureHandler;
+import org.example.nova.domain.user.entity.UserRole;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final ClientRegistrationRepository clientRegistrationRepository;
-    private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+
 
     @Bean
-    public HttpSessionOAuth2AuthorizationRequestRepository authorizationRequestRepository() {
-        return new HttpSessionOAuth2AuthorizationRequestRepository();
-    }
-
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/admin").hasRole("ADMIN")
+                        .requestMatchers("/auth/admin").hasRole(UserRole.ADMIN.name())
                         .requestMatchers("/auth/info").authenticated()
                         .anyRequest().permitAll()
                 )
@@ -36,27 +29,18 @@ public class SecurityConfig {
                         .loginProcessingUrl("/auth/loginProc")
                         .usernameParameter("loginId")
                         .passwordParameter("password")
-                        .defaultSuccessUrl("/auth", true)
+                        .defaultSuccessUrl("/auth")
                         .failureUrl("/auth")
                         .permitAll()
                 )
                 .oauth2Login(auth -> auth
-                        .loginPage("/auth/login")
-                        .defaultSuccessUrl("/auth", true)
-                        .failureUrl("/auth/login?error=true")
-                        .failureHandler(customAuthenticationFailureHandler)
-                        .authorizationEndpoint(endpoint -> endpoint
-                                .authorizationRequestRepository(authorizationRequestRepository())
-                        )
+                        .loginPage("/auth/login")  // OAuth2 로그인 진입점
+                        .defaultSuccessUrl("/auth")
+                        .failureUrl("/auth/login")
                         .permitAll()
                 )
-                .logout(auth -> auth
-                        .logoutUrl("/auth/logout")
-                        .permitAll()
-                )
-                .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                );
+                .logout(auth -> auth.logoutUrl("/auth/logout"))
+                .csrf(auth -> auth.disable());
 
         return http.build();
     }
