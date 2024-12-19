@@ -34,6 +34,11 @@ spring:
         ddl-auto: update
       show-sql: true
 
+  servlet:
+    session:
+      timeout: 30m
+
+
 logging:
   level:
     root: INFO
@@ -45,3 +50,4 @@ server:
   error:
     whitelabel:
       enabled: false
+
