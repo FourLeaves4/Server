@@ -26,6 +26,7 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+
         log.info("Starting OAuth2 User Login Process");
 
         OAuth2User oAuth2User = super.loadUser(userRequest);
@@ -71,8 +72,12 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
                 log.info("Updating existing user with new tokens.");
             }
 
-            userRepository.save(user);
-            log.info("User saved successfully: {}", user);
+            try {
+                userRepository.save(user);
+                log.info("User saved successfully: {}", user);
+            } catch (Exception e) {
+                log.error("Failed to save user to DB", e);
+            }
 
             return new CustormOAuth2UserDetails(user, oAuth2User.getAttributes());
 
