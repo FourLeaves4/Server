@@ -1,6 +1,5 @@
 package org.example.nova.auth.presentation;
 
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
