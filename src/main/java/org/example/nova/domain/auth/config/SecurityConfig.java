@@ -8,12 +8,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final ClientRegistrationRepository clientRegistrationRepository;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -33,9 +36,16 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .oauth2Login(auth -> auth
-                        .loginPage("/auth/login")  // OAuth2 로그인 진입점
+                        .loginPage("/auth/login")
                         .defaultSuccessUrl("/auth", true)
                         .failureUrl("/auth/login?error=true")
+                        .authorizationEndpoint(endpoint -> endpoint
+                                .authorizationRequestResolver(
+                                        new CustomAuthorizationRequestResolver(
+                                                clientRegistrationRepository,
+                                                "/oauth2/authorization"
+                                        )
+                                ))
                         .permitAll()
                 )
                 .logout(auth -> auth.logoutUrl("/auth/logout"))
@@ -48,4 +58,5 @@ public class SecurityConfig {
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 }
