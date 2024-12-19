@@ -30,7 +30,7 @@ public class CustormOAuth2UserDetails implements UserDetails, OAuth2User {
 
     @Override
     public String getName() {
-        return null;
+        return user.getName();
     }
 
     @Override
