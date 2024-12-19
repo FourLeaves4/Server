@@ -1,6 +1,5 @@
 package org.example.nova.auth.config;
 
-
 import lombok.RequiredArgsConstructor;
 import org.example.nova.user.entity.UserRole;
 import org.springframework.context.annotation.Bean;
@@ -32,7 +31,7 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .oauth2Login(auth -> auth
-                        .loginPage("/auth/login")
+                        .loginPage("/auth/login")  // OAuth2 로그인 진입점
                         .defaultSuccessUrl("/auth")
                         .failureUrl("/auth/login")
                         .permitAll()

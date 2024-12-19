@@ -59,13 +59,13 @@ public class AuthController {
         String pageName = "관리자 페이지";
         User user = (User) session.getAttribute("member");
 
-        return "redirect:/oauth";
+        return "redirect:/auth";
 
     }
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
-        return "redirect:/oauth";
+        return "redirect:/auth";
     }
 }
