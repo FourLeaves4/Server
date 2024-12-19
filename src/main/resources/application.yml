@@ -40,3 +40,8 @@ logging:
     org.springframework: DEBUG
     org.hibernate.SQL: DEBUG
     org.springframework.security: DEBUG
+
+server:
+  error:
+    whitelabel:
+      enabled: false
