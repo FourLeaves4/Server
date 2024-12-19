@@ -1,6 +1,5 @@
 package org.example.nova.domain.auth.config;
 
-
 import lombok.RequiredArgsConstructor;
 import org.example.nova.domain.user.entity.UserRole;
 import org.springframework.context.annotation.Bean;

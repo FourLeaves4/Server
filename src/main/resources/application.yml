@@ -11,13 +11,20 @@ spring:
             scope:
               - email
               - profile
+              - openid
             redirect-uri: "https://port-0-server-lz1cq56f81af005d.sel4.cloudtype.app/login/oauth2/code/google"
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
 
   datasource:
     url: ${DB_URL}
     username: root
     password: ${DB_PASSWORD}
     driver-class-name: org.mariadb.jdbc.Driver
+
     jpa:
       properties:
         hibernate:
@@ -25,3 +32,5 @@ spring:
       hibernate:
         ddl-auto: update
       show-sql: true
+
+

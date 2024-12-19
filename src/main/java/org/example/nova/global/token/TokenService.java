@@ -4,6 +4,7 @@ package org.example.nova.global.token;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,18 +16,25 @@ public class TokenService {
     private final String googleTokenUrl = "https://oauth2.googleapis.com/token";
     private final RestTemplate restTemplate = new RestTemplate();
 
+    @Value("${GOOGLE_CLIENT_ID}")
+    private String clientId;
+
+    @Value("${GOOGLE_CLIENT_SECRET}")
+    private String clientSecret;
+
+
     public String refreshAccessToken(String refreshToken) {
-        Map<String, String> requstBody = new HashMap<>();
-        requstBody.put("client_id", "${GOOGLE_CLIENT_ID}");
-        requstBody.put("client_secret", "${GOOGLE_CLIENT_SECRET}");
-        requstBody.put("refresh_token", refreshToken);
-        requstBody.put("grant_type", "refresh_token");
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("client_id", clientId);
+        requestBody.put("client_secret", clientSecret);
+        requestBody.put("refresh_token", refreshToken);
+        requestBody.put("grant_type", "refresh_token");
 
         try {
-            Map<String, Object> response = restTemplate.postForObject(googleTokenUrl, requstBody, Map.class);
+            Map<String, Object> response = restTemplate.postForObject(googleTokenUrl, requestBody, Map.class);
             return (String) response.get("access_token");
         } catch (Exception e) {
-            throw new RuntimeException("access token을 불러오는데 실패했습니다.", e);
+            throw new RuntimeException("Access token 갱신 실패", e);
         }
     }
 

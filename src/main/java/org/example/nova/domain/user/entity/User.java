@@ -8,18 +8,22 @@ import lombok.*;
 @Builder
 @Getter
 @Setter
+@Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long userId;
 
     private String loginId;
     private String name;
     private String password;
     private String refreshToken;
+
+    @Column(name = "access_token", length = 512)
     private String accessToken;
+
     private String provider;
     private String providerId;
 

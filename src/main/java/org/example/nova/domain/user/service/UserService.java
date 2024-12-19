@@ -47,12 +47,16 @@ public class UserService {
         String loginId = loginRequestDto.getLoginId();
         String password = loginRequestDto.getPassword();
 
-        User user = userRepository.findByLoginId(loginId);
+        User findUser = userRepository.findByLoginId(loginId);
 
-        if (user == null || !bCryptPasswordEncoder.matches(password, user.getPassword())) {
+        if (findUser == null) {
             return null;
         }
 
-        return user;
+        if (!bCryptPasswordEncoder.matches(password, findUser.getPassword())) {
+            return null;
+        }
+
+        return findUser;
     }
 }

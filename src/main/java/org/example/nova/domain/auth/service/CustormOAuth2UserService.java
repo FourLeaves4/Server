@@ -1,5 +1,6 @@
 package org.example.nova.domain.auth.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.nova.domain.auth.details.CustormOAuth2UserDetails;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class CustormOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
@@ -73,11 +75,14 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
                     .refreshToken(refreshToken)
                     .role(UserRole.USER)
                     .build();
+            log.info("Saving new user: {}", user);
             userRepository.save(user);
         } else {
             user.setRefreshToken(refreshToken);
+            log.info("Updating user with refreshToken: {}", refreshToken);
             userRepository.save(user);
         }
+
 
         return new CustormOAuth2UserDetails(user, oAuth2User.getAttributes());
     }
