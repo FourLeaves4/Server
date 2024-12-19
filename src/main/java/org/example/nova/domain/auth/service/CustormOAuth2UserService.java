@@ -72,15 +72,17 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
                     .name(name)
                     .provider(provider)
                     .providerId(providerId)
-                    .accessToken(accessToken)
                     .refreshToken(refreshToken)
                     .role(UserRole.USER)
                     .build();
+            log.info("Saving new user: {}", user);
             userRepository.save(user);
         } else {
             user.setRefreshToken(refreshToken);
+            log.info("Updating user with refreshToken: {}", refreshToken);
             userRepository.save(user);
         }
+
 
         return new CustormOAuth2UserDetails(user, oAuth2User.getAttributes());
     }
