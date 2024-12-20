@@ -1,12 +1,12 @@
 package org.example.nova.home.service;
 
 import org.example.nova.home.dto.MissionRequestDto;
-import org.example.nova.home.dto.MissionTodayRequestDto;
 import org.example.nova.home.dto.MissionResponseDto;
+import org.example.nova.home.dto.MissionTodayRequestDto;
 import org.example.nova.home.entity.Mission;
 import org.example.nova.home.repository.MissionRepository;
-import org.example.nova.user.repository.UserRepository;
 import org.example.nova.user.entity.User;
+import org.example.nova.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +22,25 @@ public class HomeService {
     public HomeService(MissionRepository missionRepository, UserRepository userRepository) {
         this.missionRepository = missionRepository;
         this.userRepository = userRepository;
+    }
+
+    public MissionResponseDto getMissionByUserId(Long userId) {
+        Optional<Mission> home = missionRepository.findByUserId(userId);
+        Optional<User> user = userRepository.findByUserId(userId);
+
+        if (home.isPresent() && user.isPresent()) {
+            Mission m = home.get();
+            User u = user.get();
+
+            return new MissionResponseDto(
+                    m.getMissions(),
+                    m.getToday(),
+                    m.getLevel(),
+                    u.getName()
+            );
+        } else {
+            throw new RuntimeException("Mission or User not found for user_id: " + userId);
+        }
     }
 
     public MissionResponseDto getMissionByUserId(Long userId, MissionRequestDto missionRequestDto) {
@@ -96,6 +115,4 @@ public class HomeService {
             throw new RuntimeException("Home not found for user_id: " + userId);
         }
     }
-
-
 }
