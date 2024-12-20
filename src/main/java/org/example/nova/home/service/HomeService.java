@@ -47,11 +47,11 @@ public class HomeService {
         Optional<Mission> home = missionRepository.findByUserId(userId);
         Optional<User> user = userRepository.findByUserId(userId);
 
-        String[] A = {"js에 대해 공부하기", "React에 대해 공부하기", "front-end에 대해 탐색하기", "코딩테스트 1개 풀기", "TIL 올리기"};
-        String[] B = {"java에 대해 공부하기", "Spring에 대해 공부하기", "back-end에 대해 탐색하기", "코딩테스트 1개 풀기", "TIL 올리기"};
-        String[] C = {"swift에 대해 공부하기", "Xcode에 대해 공부하기", "ios에 대해 탐색하기", "코딩테스트 1개 풀기", "TIL 올리기"};
-        String[] D = {"kotlin에 대해 공부하기", "Android Studio에 대해 공부하기", "aos에 대해 탐색하기", "코딩테스트 1개 풀기", "TIL 올리기"};
-        String[] N = {"전공 조사하기", "개발 언어 선택하기", "개발 환경 설치하기", "깃과 깃허브에 대한 공부하기", "TIL 올리기"};
+        String[] A = {"\uD83D\uDE06 js에 대해 공부하기", "\uD83D\uDCD8 React에 대해 공부하기", "\uD83D\uDCBB front-end에 대해 탐색하기", "✏\uFE0F 코딩테스트 1개 풀기", "\uD83D\uDCD1 TIL 올리기"};
+        String[] B = {"\uD83D\uDE06 java에 대해 공부하기", "\uD83D\uDCD8 Spring에 대해 공부하기", "\uD83D\uDCBB back-end에 대해 탐색하기", "✏\uFE0F 코딩테스트 1개 풀기", "\uD83D\uDCD1 TIL 올리기"};
+        String[] C = {"\uD83D\uDE06 swift에 대해 공부하기", "\uD83D\uDCD8 Xcode에 대해 공부하기", "\uD83D\uDCBB ios에 대해 탐색하기", "✏\uFE0F 코딩테스트 1개 풀기", "\uD83D\uDCD1 TIL 올리기"};
+        String[] D = {"\uD83D\uDE06 kotlin에 대해 공부하기", "\uD83D\uDCD8 Android Studio에 대해 공부하기", "\uD83D\uDCBB aos에 대해 탐색하기", "✏\uFE0F 코딩테스트 1개 풀기", "\uD83D\uDCD1 TIL 올리기"};
+        String[] N = {"\uD83D\uDE06 전공 조사하기", "\uD83D\uDCD8 개발 언어 선택하기", "\uD83D\uDCBB 개발 환경 설치하기", "\uD83D\uDC08\u200D⬛ 깃과 깃허브에 대한 공부하기", "\uD83D\uDCD1 TIL 올리기"};
 
         if (home.isPresent() && user.isPresent()) {
             Mission m = home.get();
