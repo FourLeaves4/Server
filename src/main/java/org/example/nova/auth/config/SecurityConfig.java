@@ -25,15 +25,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .anyRequest().permitAll()
                 )
-                .formLogin(auth -> auth
-                        .loginPage("/auth/login")
-                        .loginProcessingUrl("/auth/loginProc")
-                        .usernameParameter("loginId")
-                        .passwordParameter("password")
-                        .defaultSuccessUrl("/auth")
-                        .failureUrl("/auth")
-                        .permitAll()
-                )
                 .oauth2Login(auth -> auth
                         .loginPage("/auth/login")
                         .defaultSuccessUrl("/auth")
