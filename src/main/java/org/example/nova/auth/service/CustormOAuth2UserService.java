@@ -1,5 +1,6 @@
 package org.example.nova.auth.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @Slf4j
@@ -59,15 +61,19 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
                     .build();
             userRepository.save(user);
 
-            // Mission 엔티티 생성
             Mission mission = new Mission();
             mission.setUserId(user.getUserId());
             mission.setLevel(0);
-
-            // 문자열로 변환하여 저장
-            mission.setMissions(new String[]{"\"\""});
-            mission.setToday(new int[]{0});
-
+            try {
+                mission.setMissions(new String[]{"mission1", "mission2", "mission3", "mission4", "mission5"});
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+            try {
+                mission.setToday(new int[]{0, 0, 0, 0, 0});
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
             missionRepository.save(mission);
         } else {
             user = findUser;
