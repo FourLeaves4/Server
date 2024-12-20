@@ -10,28 +10,22 @@ import java.util.Collection;
 import java.util.Map;
 
 public class CustormOAuth2UserDetails implements UserDetails, OAuth2User {
-    private User user;
-    private Map<String, Object> attributes;
+    private final User user;
+    private final Map<String, Object> attributes;
 
-    public void CustomUserDetails(User user, Map<String, Object> attributes) {
-
+    public CustormOAuth2UserDetails(User user, Map<String, Object> attributes) {
         this.user = user;
         this.attributes = attributes;
     }
 
-    public CustormOAuth2UserDetails(User user, Map<String, Object> attributes) {
-        this.user = user;
+    @Override
+    public String getName() {
+        return user.getName(); // Null 방지
     }
-
 
     @Override
     public Map<String, Object> getAttributes() {
         return attributes;
-    }
-
-    @Override
-    public String getName() {
-        return null;
     }
 
     @Override

@@ -27,16 +27,15 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        log.info("getAttributes : {}",oAuth2User.getAttributes());
+        log.info("getAttributes : {}", oAuth2User.getAttributes());
 
         OAuth2UserInfo oAuth2UserInfo = new GoogleUserDetails(oAuth2User.getAttributes());
 
         String provider = userRequest.getClientRegistration().getRegistrationId();
 
-        if(provider.equals("google")){
+        if (provider.equals("google")) {
             log.info("구글 로그인");
             oAuth2UserInfo = new GoogleUserDetails(oAuth2User.getAttributes());
-
         }
 
         String providerId = oAuth2UserInfo.getProviderId();
@@ -56,7 +55,7 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
                     .role(UserRole.USER)
                     .build();
             userRepository.save(user);
-        } else{
+        } else {
             user = findUser;
         }
 

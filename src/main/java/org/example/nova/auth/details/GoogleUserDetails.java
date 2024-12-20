@@ -1,7 +1,6 @@
 package org.example.nova.auth.details;
 
 import org.example.nova.auth.info.OAuth2UserInfo;
-
 import java.util.Map;
 
 public class GoogleUserDetails implements OAuth2UserInfo {

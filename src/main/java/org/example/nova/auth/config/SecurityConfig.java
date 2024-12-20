@@ -35,7 +35,7 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .oauth2Login(auth -> auth
-                        .loginPage("/auth/login")  // OAuth2 로그인 진입점
+                        .loginPage("/auth/login")
                         .defaultSuccessUrl("/auth")
                         .failureUrl("/auth/login")
                         .permitAll()
