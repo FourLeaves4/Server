@@ -9,6 +9,8 @@ import org.example.nova.user.entity.User;
 import org.example.nova.user.entity.UserRole;
 import org.example.nova.auth.info.OAuth2UserInfo;
 import org.example.nova.user.repository.UserRepository;
+import org.example.nova.home.entity.Mission;
+import org.example.nova.home.repository.MissionRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -23,6 +25,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 public class CustormOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
+    private final MissionRepository missionRepository;  // MissionRepository 주입
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -55,6 +58,12 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
                     .role(UserRole.USER)
                     .build();
             userRepository.save(user);
+            Mission mission = new Mission();
+            mission.setUserId(user.getUserId());
+            mission.setLevel(0);
+            mission.setMissions(new String[0]);
+            mission.setToday(new int[0]);
+            missionRepository.save(mission);
         } else {
             user = findUser;
         }
