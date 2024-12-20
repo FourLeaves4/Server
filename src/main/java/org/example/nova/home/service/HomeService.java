@@ -1,5 +1,7 @@
 package org.example.nova.home.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.nova.home.dto.MissionRequestDto;
 import org.example.nova.home.dto.MissionResponseDto;
 import org.example.nova.home.dto.MissionTodayRequestDto;
@@ -10,6 +12,8 @@ import org.example.nova.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,7 +28,9 @@ public class HomeService {
         this.userRepository = userRepository;
     }
 
-    public MissionResponseDto getMissionByUserId(Long userId) {
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    public MissionResponseDto getMissionByUserId(Long userId) throws JsonProcessingException {
         Optional<Mission> home = missionRepository.findByUserId(userId);
         Optional<User> user = userRepository.findByUserId(userId);
 
@@ -32,18 +38,16 @@ public class HomeService {
             Mission m = home.get();
             User u = user.get();
 
-            return new MissionResponseDto(
-                    m.getMissions(),
-                    m.getToday(),
-                    m.getLevel(),
-                    u.getName()
-            );
+            List<String> missionsList = Arrays.asList(objectMapper.readValue(m.getMissions(), String[].class));
+            List<Integer> todayList = Arrays.asList(objectMapper.readValue(m.getToday(), Integer[].class));
+
+            return new MissionResponseDto(missionsList, todayList, m.getLevel(), u.getName());
         } else {
             throw new RuntimeException("Mission or User not found for user_id: " + userId);
         }
     }
 
-    public MissionResponseDto getMissionByUserId(Long userId, MissionRequestDto missionRequestDto) {
+    public MissionResponseDto getMissionByUserId(Long userId, MissionRequestDto missionRequestDto) throws JsonProcessingException {
         Optional<Mission> home = missionRepository.findByUserId(userId);
         Optional<User> user = userRepository.findByUserId(userId);
 
@@ -58,8 +62,8 @@ public class HomeService {
             User u = user.get();
 
             if (missionRequestDto.getMajor() != 0) {
-                u.setMajor(missionRequestDto.getMajor()); // major 값 업데이트
-                userRepository.save(u); // DB에 저장
+                u.setMajor(missionRequestDto.getMajor());
+                userRepository.save(u);
             }
 
             String[] missions;
@@ -79,26 +83,25 @@ public class HomeService {
                 case 5:
                     missions = N;
                     break;
+
                 default:
                     throw new RuntimeException("Invalid major value: " + u.getMajor());
             }
 
-            m.setMissions(missions);
+            m.setMissions(Arrays.toString(missions));
 
-            int[] today = m.getToday();
-            if (today == null || today.length == 0) {
-                today = new int[]{0, 0, 0, 0, 0};
+            String today = m.getToday();
+            if (today == null || today.length() == 0) {
+                today = Arrays.toString(new int[]{0, 0, 0, 0, 0});
                 m.setToday(today);
             }
 
             missionRepository.save(m);
 
-            return new MissionResponseDto(
-                    m.getMissions(),
-                    m.getToday(),
-                    m.getLevel(),
-                    u.getName()
-            );
+            List<String> missionsList = Arrays.asList(objectMapper.readValue(m.getMissions(), String[].class));
+            List<Integer> todayList = Arrays.asList(objectMapper.readValue(m.getToday(), Integer[].class));
+
+            return new MissionResponseDto(missionsList, todayList, m.getLevel(), u.getName());
         } else {
             throw new RuntimeException("Mission or User not found for user_id: " + userId);
         }
@@ -109,10 +112,10 @@ public class HomeService {
 
         if (home.isPresent()) {
             Mission h = home.get();
-            h.setToday(missionTodayRequestDto.getToday());
+            h.setToday(Arrays.toString(missionTodayRequestDto.getToday()));
             missionRepository.save(h);
         } else {
-            throw new RuntimeException("Home not found for user_id: " + userId);
+            throw new RuntimeException("Mission not found for user_id: " + userId);
         }
     }
 }

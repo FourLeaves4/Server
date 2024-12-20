@@ -1,17 +1,18 @@
 package org.example.nova.home.entity;
 
 import jakarta.persistence.*;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data
 @Entity
+@Data
+@NoArgsConstructor
+@Table(name = "mission")
 public class Mission {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long missionId;
+    private int homeId;
 
     private Long userId;
     private int level;
@@ -21,14 +22,4 @@ public class Mission {
 
     @Column(columnDefinition = "JSON")
     private String today;
-
-    public void setMissions(String[] missionsArray) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        this.missions = objectMapper.writeValueAsString(missionsArray);
-    }
-
-    public void setToday(int[] todayArray) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        this.today = objectMapper.writeValueAsString(todayArray);
-    }
 }

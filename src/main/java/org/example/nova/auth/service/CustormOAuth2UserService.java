@@ -1,6 +1,7 @@
 package org.example.nova.auth.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 @Service
 @Slf4j
@@ -28,6 +29,7 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
     private final MissionRepository missionRepository;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -64,22 +66,20 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
             Mission mission = new Mission();
             mission.setUserId(user.getUserId());
             mission.setLevel(0);
+
             try {
-                mission.setMissions(new String[]{"mission1", "mission2", "mission3", "mission4", "mission5"});
+                mission.setMissions(objectMapper.writeValueAsString(new Object()));
+                mission.setToday(objectMapper.writeValueAsString(new Object()));
             } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+                log.error("Error serializing missions or today: ", e);
             }
-            try {
-                mission.setToday(new int[]{0, 0, 0, 0, 0});
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
+
+
             missionRepository.save(mission);
         } else {
             user = findUser;
         }
 
-        // 세션에 사용자 정보 저장
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attributes != null) {
             HttpSession session = attributes.getRequest().getSession();

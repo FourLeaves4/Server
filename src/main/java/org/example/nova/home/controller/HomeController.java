@@ -1,5 +1,6 @@
 package org.example.nova.home.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.example.nova.home.dto.MissionRequestDto;
 import org.example.nova.home.dto.MissionResponseDto;
 import org.example.nova.home.dto.MissionTodayRequestDto;
@@ -21,12 +22,12 @@ public class HomeController {
     }
 
     @GetMapping("/mission")
-    public MissionResponseDto getMission(@PathVariable("user_id") Long userId) {
+    public MissionResponseDto getMission(@PathVariable("user_id") Long userId) throws JsonProcessingException {
         return homeService.getMissionByUserId(userId);
     }
 
     @PostMapping("/mission")
-    public MissionResponseDto updateMission(@PathVariable("user_id") Long userId, @RequestBody MissionRequestDto missionRequestDto) {
+    public MissionResponseDto updateMission(@PathVariable("user_id") Long userId, @RequestBody MissionRequestDto missionRequestDto) throws JsonProcessingException {
         return homeService.getMissionByUserId(userId, missionRequestDto);
     }
 
