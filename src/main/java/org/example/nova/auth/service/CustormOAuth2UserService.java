@@ -25,7 +25,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 public class CustormOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
-    private final MissionRepository missionRepository;  // MissionRepository 주입
+    private final MissionRepository missionRepository;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -58,16 +58,22 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
                     .role(UserRole.USER)
                     .build();
             userRepository.save(user);
+
+            // Mission 엔티티 생성
             Mission mission = new Mission();
             mission.setUserId(user.getUserId());
             mission.setLevel(0);
-            mission.setMissions(new String[0]);
-            mission.setToday(new int[0]);
+
+            // 문자열로 변환하여 저장
+            mission.setMissions(new String[]{"\"\""});
+            mission.setToday(new int[]{0});
+
             missionRepository.save(mission);
         } else {
             user = findUser;
         }
 
+        // 세션에 사용자 정보 저장
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attributes != null) {
             HttpSession session = attributes.getRequest().getSession();
