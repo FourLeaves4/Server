@@ -15,7 +15,6 @@ public class Mission {
     private int homeId;
 
     private Long userId;
-    private String name;
     private int level;
 
     @Column(columnDefinition = "JSON")
@@ -23,5 +22,4 @@ public class Mission {
 
     @Column(columnDefinition = "JSON")
     private int[] today;
-
 }
