@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "misson")
+@Table(name = "mission")
 public class Mission {
 
     @Id
