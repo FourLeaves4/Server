@@ -32,7 +32,7 @@ public class HomeController {
     }
 
     @PostMapping("/mission/value")
-    public ResponseEntity<Void> updateMissionValue(@PathVariable("user_id") Long userId, @RequestBody MissionTodayRequestDto missionTodayRequestDto) {
+    public ResponseEntity<Void> updateMissionValue(@PathVariable("user_id") Long userId, @RequestBody MissionTodayRequestDto missionTodayRequestDto) throws JsonProcessingException {
         homeService.updateMission(userId, missionTodayRequestDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
