@@ -22,26 +22,26 @@ public class HomeService {
     private final MissionRepository missionRepository;
     private final UserRepository userRepository;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     @Autowired
     public HomeService(MissionRepository missionRepository, UserRepository userRepository) {
         this.missionRepository = missionRepository;
         this.userRepository = userRepository;
     }
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
     public MissionResponseDto getMissionByUserId(Long userId) throws JsonProcessingException {
         Optional<Mission> home = missionRepository.findByUserId(userId);
         Optional<User> user = userRepository.findByUserId(userId);
 
         if (home.isPresent() && user.isPresent()) {
-            Mission m = home.get();
+            Mission mission = home.get();
             User u = user.get();
 
-            List<String> missionsList = Arrays.asList(objectMapper.readValue(m.getMissions(), String[].class));
-            List<Integer> todayList = Arrays.asList(objectMapper.readValue(m.getToday(), Integer[].class));
+            List<String> missionsList = Arrays.asList(objectMapper.readValue(mission.getMissions(), String[].class));
+            List<Integer> todayList = Arrays.asList(objectMapper.readValue(mission.getToday(), Integer[].class));
 
-            return new MissionResponseDto(missionsList, todayList, m.getLevel(), u.getName());
+            return new MissionResponseDto(missionsList, todayList, mission.getLevel(), u.getName());
         } else {
             throw new RuntimeException("Mission or User not found for user_id: " + userId);
         }
@@ -51,14 +51,14 @@ public class HomeService {
         Optional<Mission> home = missionRepository.findByUserId(userId);
         Optional<User> user = userRepository.findByUserId(userId);
 
-        String[] A = {"\uD83D\uDE06 js에 대해 공부하기", "\uD83D\uDCD8 React에 대해 공부하기", "\uD83D\uDCBB front-end에 대해 탐색하기", "✏\uFE0F 코딩테스트 1개 풀기", "\uD83D\uDCD1 TIL 올리기"};
-        String[] B = {"\uD83D\uDE06 java에 대해 공부하기", "\uD83D\uDCD8 Spring에 대해 공부하기", "\uD83D\uDCBB back-end에 대해 탐색하기", "✏\uFE0F 코딩테스트 1개 풀기", "\uD83D\uDCD1 TIL 올리기"};
-        String[] C = {"\uD83D\uDE06 swift에 대해 공부하기", "\uD83D\uDCD8 Xcode에 대해 공부하기", "\uD83D\uDCBB ios에 대해 탐색하기", "✏\uFE0F 코딩테스트 1개 풀기", "\uD83D\uDCD1 TIL 올리기"};
-        String[] D = {"\uD83D\uDE06 kotlin에 대해 공부하기", "\uD83D\uDCD8 Android Studio에 대해 공부하기", "\uD83D\uDCBB aos에 대해 탐색하기", "✏\uFE0F 코딩테스트 1개 풀기", "\uD83D\uDCD1 TIL 올리기"};
-        String[] N = {"\uD83D\uDE06 전공 조사하기", "\uD83D\uDCD8 개발 언어 선택하기", "\uD83D\uDCBB 개발 환경 설치하기", "\uD83D\uDC08\u200D⬛ 깃과 깃허브에 대한 공부하기", "\uD83D\uDCD1 TIL 올리기"};
+        String[] A = {"😀 js에 대해 공부하기", "📘 React에 대해 공부하기", "💻 front-end에 대해 탐색하기", "✏️ 코딩테스트 1개 풀기", "📑 TIL 올리기"};
+        String[] B = {"😀 java에 대해 공부하기", "📘 Spring에 대해 공부하기", "💻 back-end에 대해 탐색하기", "✏️ 코딩테스트 1개 풀기", "📑 TIL 올리기"};
+        String[] C = {"😀 swift에 대해 공부하기", "📘 Xcode에 대해 공부하기", "💻 ios에 대해 탐색하기", "✏️ 코딩테스트 1개 풀기", "📑 TIL 올리기"};
+        String[] D = {"😀 kotlin에 대해 공부하기", "📘 Android Studio에 대해 공부하기", "💻 aos에 대해 탐색하기", "✏️ 코딩테스트 1개 풀기", "📑 TIL 올리기"};
+        String[] N = {"😀 전공 조사하기", "📘 개발 언어 선택하기", "💻 개발 환경 설치하기", "🐱‍⬛ 깃과 깃허브에 대한 공부하기", "📑 TIL 올리기"};
 
         if (home.isPresent() && user.isPresent()) {
-            Mission m = home.get();
+            Mission mission = home.get();
             User u = user.get();
 
             if (missionRequestDto.getMajor() != 0) {
@@ -68,52 +68,41 @@ public class HomeService {
 
             String[] missions;
             switch (u.getMajor()) {
-                case 1:
-                    missions = A;
-                    break;
-                case 2:
-                    missions = B;
-                    break;
-                case 3:
-                    missions = C;
-                    break;
-                case 4:
-                    missions = D;
-                    break;
-                case 5:
-                    missions = N;
-                    break;
-
-                default:
-                    throw new RuntimeException("Invalid major value: " + u.getMajor());
+                case 1 -> missions = A;
+                case 2 -> missions = B;
+                case 3 -> missions = C;
+                case 4 -> missions = D;
+                case 5 -> missions = N;
+                default -> throw new RuntimeException("Invalid major value: " + u.getMajor());
             }
 
-            m.setMissions(Arrays.toString(missions));
+            mission.setMissions(objectMapper.writeValueAsString(missions));
 
-            String today = m.getToday();
-            if (today == null || today.length() == 0) {
-                today = Arrays.toString(new int[]{0, 0, 0, 0, 0});
-                m.setToday(today);
+            if (mission.getToday() == null || mission.getToday().isEmpty()) {
+                mission.setToday(objectMapper.writeValueAsString(new int[]{0, 0, 0, 0, 0}));
             }
 
-            missionRepository.save(m);
+            missionRepository.save(mission);
 
-            List<String> missionsList = Arrays.asList(objectMapper.readValue(m.getMissions(), String[].class));
-            List<Integer> todayList = Arrays.asList(objectMapper.readValue(m.getToday(), Integer[].class));
+            List<String> missionsList = Arrays.asList(objectMapper.readValue(mission.getMissions(), String[].class));
+            List<Integer> todayList = Arrays.asList(objectMapper.readValue(mission.getToday(), Integer[].class));
 
-            return new MissionResponseDto(missionsList, todayList, m.getLevel(), u.getName());
+            return new MissionResponseDto(missionsList, todayList, mission.getLevel(), u.getName());
         } else {
             throw new RuntimeException("Mission or User not found for user_id: " + userId);
         }
     }
 
-    public void updateMission(Long userId, MissionTodayRequestDto missionTodayRequestDto) {
+    public void updateMission(Long userId, MissionTodayRequestDto missionTodayRequestDto) throws JsonProcessingException {
         Optional<Mission> home = missionRepository.findByUserId(userId);
 
         if (home.isPresent()) {
-            Mission h = home.get();
-            h.setToday(Arrays.toString(missionTodayRequestDto.getToday()));
-            missionRepository.save(h);
+            Mission mission = home.get();
+
+            String todayJson = objectMapper.writeValueAsString(missionTodayRequestDto.getToday());
+            mission.setToday(todayJson);
+
+            missionRepository.save(mission);
         } else {
             throw new RuntimeException("Mission not found for user_id: " + userId);
         }
