@@ -116,7 +116,6 @@ public class HomeService {
 
             String todayJson = objectMapper.writeValueAsString(missionTodayRequestDto.getToday());
             mission.setToday(todayJson);
-
             missionRepository.save(mission);
 
             Optional<Profile> optionalProfile = profileRepository.findByUserId(userId);
@@ -125,18 +124,17 @@ public class HomeService {
 
                 List<Integer> month = parseMonth(profile.getMonth());
                 int todayIndex = LocalDate.now().getDayOfMonth() - 1;
+
                 List<Integer> todayList = objectMapper.readValue(mission.getToday(), List.class);
                 int todayCount = (int) todayList.stream().filter(value -> value == 1).count();
 
                 if (month.get(todayIndex) == null) {
                     month.set(todayIndex, 0);
                 }
-
-                month.set(todayIndex, month.get(todayIndex) + todayCount);
+                month.set(todayIndex, todayCount);
 
                 String updatedMonthJson = objectMapper.writeValueAsString(month);
                 profile.setMonth(updatedMonthJson);
-
                 profileRepository.save(profile);
             } else {
                 throw new RuntimeException("Profile not found for user_id: " + userId);
