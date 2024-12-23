@@ -1,6 +1,5 @@
 package org.example.nova.auth.service;
 
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
@@ -24,7 +23,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
 
 @Service
 @Slf4j
@@ -61,6 +59,7 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
         if (findUser == null) {
             user = User.builder()
                     .loginId(loginId)
+                    .email(email)
                     .name(name)
                     .provider(provider)
                     .providerId(providerId)
