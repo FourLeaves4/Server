@@ -150,7 +150,7 @@ public class HomeService {
         Profile profile = optionalProfile.orElseGet(() -> createNewProfile(userId));
         List<Integer> month = parseMonth(profile.getMonth());
 
-        profile.setNum((profile.getNum() + 1) % 5);
+        profile.setNum(profile.getSum() % 5);
         profile.setSum(month.stream().mapToInt(Integer::intValue).sum());
         int level = profile.getSum() / 5;
 
