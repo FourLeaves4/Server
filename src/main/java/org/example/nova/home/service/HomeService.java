@@ -203,6 +203,8 @@ public class HomeService {
     public ProfileLevelResponseDto getProfileLevel(Long userId) {
         Profile profile = profileRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Profile not found for user_id: " + userId));
-        return new ProfileLevelResponseDto(profile.getNum(), profile.getSum());
+        Mission mission= missionRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Profile not found for user_id: " + userId));
+        return new ProfileLevelResponseDto(profile.getNum(), mission.getLevel());
     }
 }
