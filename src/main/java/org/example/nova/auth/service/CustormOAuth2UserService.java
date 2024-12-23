@@ -7,12 +7,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.nova.auth.details.CustormOAuth2UserDetails;
 import org.example.nova.auth.details.GoogleUserDetails;
+import org.example.nova.home.entity.Profile;
 import org.example.nova.user.entity.User;
 import org.example.nova.user.entity.UserRole;
 import org.example.nova.auth.info.OAuth2UserInfo;
 import org.example.nova.user.repository.UserRepository;
 import org.example.nova.home.entity.Mission;
 import org.example.nova.home.repository.MissionRepository;
+import org.example.nova.home.repository.ProfileRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -29,6 +31,7 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
     private final MissionRepository missionRepository;
+    private final ProfileRepository profileRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
@@ -54,6 +57,7 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
         User user;
 
         if (findUser == null) {
+            // 새로운 사용자 생성
             user = User.builder()
                     .loginId(loginId)
                     .name(name)
@@ -63,6 +67,7 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
                     .build();
             userRepository.save(user);
 
+            // 새로운 Mission 생성
             Mission mission = new Mission();
             mission.setUserId(user.getUserId());
             mission.setLevel(0);
@@ -73,12 +78,24 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
             } catch (JsonProcessingException e) {
                 log.error("Error serializing missions or today: ", e);
             }
-
-
             missionRepository.save(mission);
+
+            Profile profile = new Profile();
+            profile.setUserId(user.getUserId());
+            profile.setNum(0);
+            profile.setSum(0);
+            try {
+                profile.setMonth(objectMapper.writeValueAsString(new Object())); // 빈 JSON 객체로 초기화
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+            profileRepository.save(profile);
+
         } else {
+            // 기존 사용자 처리
             user = findUser;
         }
+
 
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attributes != null) {
