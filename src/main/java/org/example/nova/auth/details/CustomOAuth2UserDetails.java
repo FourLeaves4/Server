@@ -1,6 +1,6 @@
 package org.example.nova.auth.details;
 
-import org.example.nova.user.entity.User;
+import org.example.nova.auth.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-public class CustormOAuth2UserDetails implements UserDetails, OAuth2User {
+public class CustomOAuth2UserDetails implements UserDetails, OAuth2User {
     private final User user;
     private final Map<String, Object> attributes;
 
-    public CustormOAuth2UserDetails(User user, Map<String, Object> attributes) {
+    public CustomOAuth2UserDetails(User user, Map<String, Object> attributes) {
         this.user = user;
         this.attributes = attributes;
     }

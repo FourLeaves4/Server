@@ -1,4 +1,4 @@
-package org.example.nova.user.entity;
+package org.example.nova.auth.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

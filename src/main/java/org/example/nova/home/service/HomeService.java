@@ -13,13 +13,12 @@ import org.example.nova.home.entity.Mission;
 import org.example.nova.home.entity.Profile;
 import org.example.nova.home.repository.MissionRepository;
 import org.example.nova.home.repository.ProfileRepository;
-import org.example.nova.user.entity.User;
-import org.example.nova.user.repository.UserRepository;
+import org.example.nova.auth.entity.User;
+import org.example.nova.auth.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
