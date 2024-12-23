@@ -57,7 +57,6 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
         User user;
 
         if (findUser == null) {
-            // 새로운 사용자 생성
             user = User.builder()
                     .loginId(loginId)
                     .name(name)
@@ -67,10 +66,14 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
                     .build();
             userRepository.save(user);
 
-            // 새로운 Mission 생성
             Mission mission = new Mission();
             mission.setUserId(user.getUserId());
             mission.setLevel(0);
+
+            Profile profile = new Profile();
+            profile.setUserId(user.getUserId());
+            profile.setNum(0);
+            profile.setSum(0);
 
             try {
                 mission.setMissions(objectMapper.writeValueAsString(new Object()));
@@ -80,19 +83,14 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
             }
             missionRepository.save(mission);
 
-            Profile profile = new Profile();
-            profile.setUserId(user.getUserId());
-            profile.setNum(0);
-            profile.setSum(0);
             try {
-                profile.setMonth(objectMapper.writeValueAsString(new Object())); // 빈 JSON 객체로 초기화
+                profile.setMonth(objectMapper.writeValueAsString(new Object()));
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
             profileRepository.save(profile);
 
         } else {
-            // 기존 사용자 처리
             user = findUser;
         }
 
