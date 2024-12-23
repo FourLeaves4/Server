@@ -45,8 +45,15 @@ public class HomeService {
             Mission mission = home.get();
             User u = user.get();
 
-            List<String> missionsList = Arrays.asList(objectMapper.readValue(mission.getMissions(), String[].class));
-            List<Integer> todayList = Arrays.asList(objectMapper.readValue(mission.getToday(), Integer[].class));
+            List<String> missionsList = new ArrayList<>();
+            if (mission.getMissions() != null && !mission.getMissions().isEmpty()) {
+                missionsList = Arrays.asList(objectMapper.readValue(mission.getMissions(), String[].class));
+            }
+
+            List<Integer> todayList = new ArrayList<>();
+            if (mission.getToday() != null && !mission.getToday().isEmpty()) {
+                todayList = Arrays.asList(objectMapper.readValue(mission.getToday(), Integer[].class));
+            }
 
             return new MissionResponseDto(missionsList, todayList, mission.getLevel(), u.getName());
         } else {
