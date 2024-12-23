@@ -7,19 +7,17 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "mission")
-public class Mission {
+@Table(name = "profile")
+public class Profile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int missionId;
+    private int profileId;
 
     private Long userId;
-    private int level;
+    private int num;
+    private int sum;
 
     @Column(columnDefinition = "JSON")
-    private String missions;
-
-    @Column(columnDefinition = "JSON")
-    private String today;
+    private String month;
 }
