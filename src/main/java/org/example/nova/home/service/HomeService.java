@@ -144,6 +144,7 @@ public class HomeService {
         }
     }
 
+
     public ProfileResponseDto getProfile(Long userId) {
         Optional<Profile> optionalProfile = profileRepository.findByUserId(userId);
         Profile profile = optionalProfile.orElseGet(() -> createNewProfile(userId));
