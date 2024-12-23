@@ -122,27 +122,24 @@ public class HomeService {
         }
 
         Optional<Profile> optionalProfile = profileRepository.findByUserId(userId);
-        if (optionalProfile.isPresent()) {
-            Profile profile = optionalProfile.get();
+        Profile profile = optionalProfile.orElseGet(() -> createNewProfile(userId)); // 여기에서 새 프로필을 생성합니다.
 
-            List<Integer> month = parseMonth(profile.getMonth());
+        List<Integer> month = parseMonth(profile.getMonth());
 
-            int todayIndex = LocalDate.now().getDayOfMonth() - 1;
+        int todayIndex = LocalDate.now().getDayOfMonth() - 1;
 
-            if (month.get(todayIndex) == null) {
-                month.set(todayIndex, 0);
-            }
-
-            month.set(todayIndex, month.get(todayIndex) + 1);
-
-            String updatedMonthJson = objectMapper.writeValueAsString(month);
-            profile.setMonth(updatedMonthJson);
-
-            profileRepository.save(profile);
-        } else {
-            throw new RuntimeException("Profile not found for user_id: " + userId);
+        if (month.get(todayIndex) == null) {
+            month.set(todayIndex, 0);
         }
+
+        month.set(todayIndex, month.get(todayIndex) + 1);
+
+        String updatedMonthJson = objectMapper.writeValueAsString(month);
+        profile.setMonth(updatedMonthJson);
+
+        profileRepository.save(profile);
     }
+
 
     public ProfileResponseDto getProfile(Long userId) {
         Optional<Profile> optionalProfile = profileRepository.findByUserId(userId);
