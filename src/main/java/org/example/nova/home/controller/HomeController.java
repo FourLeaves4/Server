@@ -44,4 +44,9 @@ public class HomeController {
     public ProfileLevelResponseDto getProfileLevel(@PathVariable("user_id") Long userId) {
         return homeService.getProfileLevel(userId);
     }
+
+    @GetMapping("/plan")
+    public PlanResponseDto getPlan(@PathVariable("user_id") Long userId) {
+        return homeService.getPlan(userId);
+    }
 }
