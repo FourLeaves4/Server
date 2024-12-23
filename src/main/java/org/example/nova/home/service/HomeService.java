@@ -6,6 +6,7 @@ import org.example.nova.home.dto.MissionRequestDto;
 import org.example.nova.home.dto.MissionResponseDto;
 import org.example.nova.home.dto.MissionTodayRequestDto;
 import org.example.nova.home.dto.ProfileResponseDto;
+import org.example.nova.home.dto.ProfileLevelResponseDto;
 import org.example.nova.home.entity.Mission;
 import org.example.nova.home.entity.Profile;
 import org.example.nova.home.repository.MissionRepository;
@@ -204,5 +205,11 @@ public class HomeService {
             month.add(0);
         }
         return month;
+    }
+
+    public ProfileLevelResponseDto getProfileLevel(Long userId) {
+        Profile profile = profileRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Profile not found for user_id: " + userId));
+        return new ProfileLevelResponseDto(profile.getNum(), profile.getSum());  // 예시로 sum을 level로 반환
     }
 }

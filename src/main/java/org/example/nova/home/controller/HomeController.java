@@ -1,10 +1,7 @@
 package org.example.nova.home.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.example.nova.home.dto.MissionRequestDto;
-import org.example.nova.home.dto.MissionResponseDto;
-import org.example.nova.home.dto.MissionTodayRequestDto;
-import org.example.nova.home.dto.ProfileResponseDto;
+import org.example.nova.home.dto.*;
 import org.example.nova.home.service.HomeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,5 +38,10 @@ public class HomeController {
     @GetMapping("/profile")
     public ProfileResponseDto getProfile(@PathVariable("user_id") Long userId) {
         return homeService.getProfile(userId);
+    }
+
+    @GetMapping("/profile/level")
+    public ProfileLevelResponseDto getProfileLevel(@PathVariable("userId") Long userId) {
+        return homeService.getProfileLevel(userId);
     }
 }
