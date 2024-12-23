@@ -151,12 +151,6 @@ public class HomeService {
         Profile profile = optionalProfile.orElseGet(() -> createNewProfile(userId));
         List<Integer> month = parseMonth(profile.getMonth());
 
-        int todayIndex = LocalDate.now().getDayOfMonth() - 1;
-        if (month.get(todayIndex) == null) {
-            month.set(todayIndex, 0);
-        }
-        month.set(todayIndex, month.get(todayIndex) + 1);
-
         profile.setNum((profile.getNum() + 1) % 5);
         profile.setSum(month.stream().mapToInt(Integer::intValue).sum());
         int level = profile.getSum() / 5;
@@ -210,6 +204,6 @@ public class HomeService {
     public ProfileLevelResponseDto getProfileLevel(Long userId) {
         Profile profile = profileRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Profile not found for user_id: " + userId));
-        return new ProfileLevelResponseDto(profile.getNum(), profile.getSum());  // 예시로 sum을 level로 반환
+        return new ProfileLevelResponseDto(profile.getNum(), profile.getSum());
     }
 }
