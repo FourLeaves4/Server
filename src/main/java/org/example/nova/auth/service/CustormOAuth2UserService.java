@@ -1,5 +1,7 @@
 package org.example.nova.auth.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +11,8 @@ import org.example.nova.user.entity.User;
 import org.example.nova.user.entity.UserRole;
 import org.example.nova.auth.info.OAuth2UserInfo;
 import org.example.nova.user.repository.UserRepository;
+import org.example.nova.home.entity.Mission;
+import org.example.nova.home.repository.MissionRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -17,12 +21,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class CustormOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
+    private final MissionRepository missionRepository;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -55,6 +62,20 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
                     .role(UserRole.USER)
                     .build();
             userRepository.save(user);
+
+            Mission mission = new Mission();
+            mission.setUserId(user.getUserId());
+            mission.setLevel(0);
+
+            try {
+                mission.setMissions(objectMapper.writeValueAsString(new Object()));
+                mission.setToday(objectMapper.writeValueAsString(new Object()));
+            } catch (JsonProcessingException e) {
+                log.error("Error serializing missions or today: ", e);
+            }
+
+
+            missionRepository.save(mission);
         } else {
             user = findUser;
         }

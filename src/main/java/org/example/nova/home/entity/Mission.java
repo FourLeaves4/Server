@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "misson")
+@Table(name = "mission")
 public class Mission {
 
     @Id
@@ -15,13 +15,11 @@ public class Mission {
     private int homeId;
 
     private Long userId;
-    private String name;
     private int level;
 
     @Column(columnDefinition = "JSON")
-    private String[] missions;
+    private String missions;
 
     @Column(columnDefinition = "JSON")
-    private int[] today;
-
+    private String today;
 }

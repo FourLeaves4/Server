@@ -1,10 +1,13 @@
 package org.example.nova.home.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.example.nova.home.dto.MissionRequestDto;
-import org.example.nova.home.dto.MissionTodayRequestDto;
 import org.example.nova.home.dto.MissionResponseDto;
+import org.example.nova.home.dto.MissionTodayRequestDto;
 import org.example.nova.home.service.HomeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,13 +22,18 @@ public class HomeController {
     }
 
     @GetMapping("/mission")
-    public MissionResponseDto getMission(@PathVariable("user_id") Long userId, @RequestBody MissionRequestDto missionRequestDto) {
-        return homeService.getMissionByUserId(userId, missionRequestDto);
+    public MissionResponseDto getMission(@PathVariable("user_id") Long userId) throws JsonProcessingException {
+        return homeService.getMissionByUserId(userId);
     }
 
     @PostMapping("/mission")
-    public String updateMission(@PathVariable("user_id") Long userId, @RequestBody MissionTodayRequestDto missionTodayRequestDto) {
+    public MissionResponseDto updateMission(@PathVariable("user_id") Long userId, @RequestBody MissionRequestDto missionRequestDto) throws JsonProcessingException {
+        return homeService.getMissionByUserId(userId, missionRequestDto);
+    }
+
+    @PostMapping("/mission/value")
+    public ResponseEntity<Void> updateMissionValue(@PathVariable("user_id") Long userId, @RequestBody MissionTodayRequestDto missionTodayRequestDto) throws JsonProcessingException {
         homeService.updateMission(userId, missionTodayRequestDto);
-        return "Mission updated successfully for user_id: " + userId;
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
