@@ -1,7 +1,9 @@
 package org.example.nova.auth.service;
 
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Collections;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -76,17 +78,20 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
             profile.setSum(0);
 
             try {
-                mission.setMissions(objectMapper.writeValueAsString(new Object()));
-                mission.setToday(objectMapper.writeValueAsString(new Object()));
+                mission.setMissions(objectMapper.writeValueAsString(Collections.emptyList())); // 빈 배열 "[]" 설정
+                mission.setToday(objectMapper.writeValueAsString(Collections.emptyMap()));    // 빈 맵 "{}" 설정
             } catch (JsonProcessingException e) {
                 log.error("Error serializing missions or today: ", e);
+                mission.setMissions("[]");
+                mission.setToday("{}");
             }
             missionRepository.save(mission);
 
             try {
-                profile.setMonth(objectMapper.writeValueAsString(new Object()));
+                profile.setMonth(objectMapper.writeValueAsString(Collections.nCopies(31, 0))); // 31일의 기본값 0 설정
             } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+                log.error("Error serializing month: ", e);
+                profile.setMonth("[]");
             }
             profileRepository.save(profile);
 
