@@ -12,4 +12,5 @@ public class ProfileResponseDto {
     private int sum;
     private int level;
     private String name;
+    private String email;
 }

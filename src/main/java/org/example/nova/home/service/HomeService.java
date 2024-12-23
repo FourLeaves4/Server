@@ -162,13 +162,14 @@ public class HomeService {
 
         Optional<User> optionalUser = userRepository.findById(userId);
         String name = optionalUser.map(User::getName).orElse("Unknown User");
+        String email = optionalUser.map(User::getEmail).orElse("Uknown User");
 
         Mission mission = missionRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalStateException("Mission 데이터가 존재하지 않습니다. userId: " + userId));
         mission.setLevel(level);
         missionRepository.save(mission);
 
-        return new ProfileResponseDto(month, profile.getNum(), profile.getSum(), level, name);
+        return new ProfileResponseDto(month, profile.getNum(), profile.getSum(), level, name, email);
     }
 
 
