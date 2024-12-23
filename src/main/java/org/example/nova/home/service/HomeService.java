@@ -15,6 +15,7 @@ import org.example.nova.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -112,15 +113,36 @@ public class HomeService {
         } else {
             throw new RuntimeException("Mission not found for user_id: " + userId);
         }
+
+        Optional<Profile> optionalProfile = profileRepository.findByUserId(userId);
+        if (optionalProfile.isPresent()) {
+            Profile profile = optionalProfile.get();
+
+            List<Integer> month = parseMonth(profile.getMonth());
+
+            int todayIndex = LocalDate.now().getDayOfMonth() - 1;
+
+            if (month.get(todayIndex) == null) {
+                month.set(todayIndex, 0);
+            }
+
+            month.set(todayIndex, month.get(todayIndex) + 1);
+
+            String updatedMonthJson = objectMapper.writeValueAsString(month);
+            profile.setMonth(updatedMonthJson);
+
+            profileRepository.save(profile);
+        } else {
+            throw new RuntimeException("Profile not found for user_id: " + userId);
+        }
     }
 
     public ProfileResponseDto getProfile(Long userId) {
         Optional<Profile> optionalProfile = profileRepository.findByUserId(userId);
-
         Profile profile = optionalProfile.orElseGet(() -> createNewProfile(userId));
         List<Integer> month = parseMonth(profile.getMonth());
 
-        int todayIndex = 22; // Index for the 23rd day
+        int todayIndex = LocalDate.now().getDayOfMonth() - 1;
         if (month.get(todayIndex) == null) {
             month.set(todayIndex, 0);
         }
@@ -133,10 +155,17 @@ public class HomeService {
         profile.setMonth(month.toString());
         profileRepository.save(profile);
 
-        String name = "1208송정연";
+        Optional<User> optionalUser = userRepository.findById(userId);
+        String name = optionalUser.map(User::getName).orElse("Unknown User");
+
+        Mission mission = missionRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalStateException("Mission 데이터가 존재하지 않습니다. userId: " + userId));
+        mission.setLevel(level);
+        missionRepository.save(mission);
 
         return new ProfileResponseDto(month, profile.getNum(), profile.getSum(), level, name);
     }
+
 
     private Profile createNewProfile(Long userId) {
         Profile profile = new Profile();
@@ -144,7 +173,6 @@ public class HomeService {
         profile.setNum(0);
         profile.setSum(0);
 
-        // month 배열 초기화 (31개의 0)
         List<Integer> month = new ArrayList<>();
         for (int i = 0; i < 31; i++) {
             month.add(0);
@@ -155,17 +183,17 @@ public class HomeService {
     }
 
     private List<Integer> parseMonth(String monthJson) {
-        List<Integer> month = new ArrayList<>();
-        if (monthJson != null) {
-            monthJson = monthJson.replace("[", "").replace("]", "");
-            String[] values = monthJson.split(",");
-            for (String value : values) {
-                month.add(value.trim().equals("null") ? 0 : Integer.parseInt(value.trim()));
+        try {
+            if (monthJson != null) {
+                return objectMapper.readValue(monthJson, List.class);
             }
-        } else {
-            for (int i = 0; i < 31; i++) {
-                month.add(0);
-            }
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        List<Integer> month = new ArrayList<>(31);
+        for (int i = 0; i < 31; i++) {
+            month.add(0);
         }
         return month;
     }
