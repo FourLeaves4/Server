@@ -1,12 +1,14 @@
 package org.example.nova.home.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.nova.home.dto.MissionRequestDto;
 import org.example.nova.home.dto.MissionResponseDto;
 import org.example.nova.home.dto.MissionTodayRequestDto;
 import org.example.nova.home.dto.ProfileResponseDto;
 import org.example.nova.home.dto.ProfileLevelResponseDto;
+import org.example.nova.home.dto.PlanResponseDto;
 import org.example.nova.home.entity.Mission;
 import org.example.nova.home.entity.Profile;
 import org.example.nova.home.repository.MissionRepository;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -66,11 +69,11 @@ public class HomeService {
         Optional<Mission> home = missionRepository.findByUserId(userId);
         Optional<User> user = userRepository.findByUserId(userId);
 
-        String[] A = {"😀 js에 대해 공부하기", "📘 React에 대해 공부하기", "💻 front-end에 대해 탐색하기", "✏️ 코딩테스트 1개 풀기", "📑 TIL 올리기"};
-        String[] B = {"😀 java에 대해 공부하기", "📘 Spring에 대해 공부하기", "💻 back-end에 대해 탐색하기", "✏️ 코딩테스트 1개 풀기", "📑 TIL 올리기"};
-        String[] C = {"😀 swift에 대해 공부하기", "📘 Xcode에 대해 공부하기", "💻 ios에 대해 탐색하기", "✏️ 코딩테스트 1개 풀기", "📑 TIL 올리기"};
-        String[] D = {"😀 kotlin에 대해 공부하기", "📘 Android Studio에 대해 공부하기", "💻 aos에 대해 탐색하기", "✏️ 코딩테스트 1개 풀기", "📑 TIL 올리기"};
-        String[] N = {"😀 전공 조사하기", "📘 개발 언어 선택하기", "💻 개발 환경 설치하기", "🐱‍⬛ 깃과 깃허브에 대한 공부하기", "📑 TIL 올리기"};
+        String[] A = {"😀 js에 대해 공부하기", "📘 React에 대해 공부하기", "💻 FE에 대해 탐색하기", "✏️ 코딩테스트 1개 풀기", "📑 TIL 올리기"};
+        String[] B = {"😀 java에 대해 공부하기", "📘 Spring에 대해 공부하기", "💻 BE에 대해 탐색하기", "✏️ 코딩테스트 1개 풀기", "📑 TIL 올리기"};
+        String[] C = {"😀 swift에 대해 공부하기", "📘 Xcode에 대해 공부하기", "💻 IOS에 대해 탐색하기", "✏️ 코딩테스트 1개 풀기", "📑 TIL 올리기"};
+        String[] D = {"😀 kotlin에 대해 공부하기", "📘 Android Studio에 대해 공부하기", "💻 AOS에 대해 탐색하기", "✏️ 코딩테스트 1개 풀기", "📑 TIL 올리기"};
+        String[] N = {"😀 전공 조사하기", "📘 개발 언어 선택하기", "💻 개발 환경 설치하기", "🐱‍⬛ Git에 대해 공부하기", "📑 TIL 올리기"};
 
         if (home.isPresent() && user.isPresent()) {
             Mission mission = home.get();
@@ -207,4 +210,46 @@ public class HomeService {
                 .orElseThrow(() -> new RuntimeException("Profile not found for user_id: " + userId));
         return new ProfileLevelResponseDto(profile.getNum(), mission.getLevel());
     }
+
+    public PlanResponseDto getPlan(Long userId) {
+        Optional<Profile> profile = profileRepository.findByUserId(userId);
+
+        if (profile.isEmpty()) {
+            throw new RuntimeException("Profile not found for userId: " + userId);
+        }
+
+        List<Integer> monthData;
+        try {
+            monthData = objectMapper.readValue(profile.get().getMonth(), new TypeReference<List<Integer>>() {});
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse month data: " + e.getMessage(), e);
+        }
+
+        List<Integer> weekData = getWeekData(monthData);
+
+        List<Integer> weekDataMultiplied = new ArrayList<>();
+        for (int day : weekData) {
+            weekDataMultiplied.add(day * 20);
+        }
+
+        int avg = (int) weekDataMultiplied.stream()
+                .mapToInt(Integer::intValue)
+                .average()
+                .orElse(0);
+
+        return new PlanResponseDto(avg, weekDataMultiplied);
+    }
+
+    private List<Integer> getWeekData(List<Integer> monthData) {
+        LocalDate now = LocalDate.now();
+        int todayIndex = now.getDayOfMonth() - 1;
+        int startIndex = todayIndex - now.getDayOfWeek().getValue() + 1;
+        int endIndex = startIndex + 7;
+
+        startIndex = Math.max(startIndex, 0);
+        endIndex = Math.min(endIndex, monthData.size());
+
+        return monthData.subList(startIndex, endIndex);
+    }
+
 }

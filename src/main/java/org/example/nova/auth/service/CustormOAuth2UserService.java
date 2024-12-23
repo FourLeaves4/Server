@@ -1,7 +1,9 @@
 package org.example.nova.auth.service;
 
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Collections;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -57,7 +59,6 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
         User user;
 
         if (findUser == null) {
-            // 새로운 사용자 생성
             user = User.builder()
                     .loginId(loginId)
                     .name(name)
@@ -67,32 +68,34 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
                     .build();
             userRepository.save(user);
 
-            // 새로운 Mission 생성
             Mission mission = new Mission();
             mission.setUserId(user.getUserId());
             mission.setLevel(0);
-
-            try {
-                mission.setMissions(objectMapper.writeValueAsString(new Object()));
-                mission.setToday(objectMapper.writeValueAsString(new Object()));
-            } catch (JsonProcessingException e) {
-                log.error("Error serializing missions or today: ", e);
-            }
-            missionRepository.save(mission);
 
             Profile profile = new Profile();
             profile.setUserId(user.getUserId());
             profile.setNum(0);
             profile.setSum(0);
+
             try {
-                profile.setMonth(objectMapper.writeValueAsString(new Object())); // 빈 JSON 객체로 초기화
+                mission.setMissions(objectMapper.writeValueAsString(Collections.nCopies(5, 0)));
+                mission.setToday(objectMapper.writeValueAsString(Collections.nCopies(5, 0)));
             } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+                log.error("Error serializing missions or today: ", e);
+                mission.setMissions("[]");
+                mission.setToday("[]");
+            }
+            missionRepository.save(mission);
+
+            try {
+                profile.setMonth(objectMapper.writeValueAsString(Collections.nCopies(31, 0)));
+            } catch (JsonProcessingException e) {
+                log.error("Error serializing month: ", e);
+                profile.setMonth("[]");
             }
             profileRepository.save(profile);
 
         } else {
-            // 기존 사용자 처리
             user = findUser;
         }
 
