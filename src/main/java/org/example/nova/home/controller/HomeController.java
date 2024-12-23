@@ -38,7 +38,7 @@ public class HomeController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/home/{user_id}/profile")
+    @GetMapping("/profile")
     public ProfileResponseDto getProfile(@PathVariable("user_id") Long userId) {
         return homeService.getProfile(userId);
     }
