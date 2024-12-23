@@ -5,13 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.nova.home.dto.MissionRequestDto;
 import org.example.nova.home.dto.MissionResponseDto;
 import org.example.nova.home.dto.MissionTodayRequestDto;
+import org.example.nova.home.dto.ProfileResponseDto;
 import org.example.nova.home.entity.Mission;
+import org.example.nova.home.entity.Profile;
 import org.example.nova.home.repository.MissionRepository;
+import org.example.nova.home.repository.ProfileRepository;
 import org.example.nova.user.entity.User;
 import org.example.nova.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -21,13 +25,15 @@ public class HomeService {
 
     private final MissionRepository missionRepository;
     private final UserRepository userRepository;
+    private final ProfileRepository profileRepository;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    public HomeService(MissionRepository missionRepository, UserRepository userRepository) {
+    public HomeService(MissionRepository missionRepository, UserRepository userRepository, ProfileRepository profileRepository) {
         this.missionRepository = missionRepository;
         this.userRepository = userRepository;
+        this.profileRepository = profileRepository;
     }
 
     public MissionResponseDto getMissionByUserId(Long userId) throws JsonProcessingException {
@@ -106,5 +112,61 @@ public class HomeService {
         } else {
             throw new RuntimeException("Mission not found for user_id: " + userId);
         }
+    }
+
+    public ProfileResponseDto getProfile(Long userId) {
+        Optional<Profile> optionalProfile = profileRepository.findByUserId(userId);
+
+        Profile profile = optionalProfile.orElseGet(() -> createNewProfile(userId));
+        List<Integer> month = parseMonth(profile.getMonth());
+
+        int todayIndex = 22; // Index for the 23rd day
+        if (month.get(todayIndex) == null) {
+            month.set(todayIndex, 0);
+        }
+        month.set(todayIndex, month.get(todayIndex) + 1);
+
+        profile.setNum((profile.getNum() + 1) % 5);
+        profile.setSum(month.stream().mapToInt(Integer::intValue).sum());
+        int level = profile.getSum() / 5;
+
+        profile.setMonth(month.toString());
+        profileRepository.save(profile);
+
+        String name = "1208송정연";
+
+        return new ProfileResponseDto(month, profile.getNum(), profile.getSum(), level, name);
+    }
+
+    private Profile createNewProfile(Long userId) {
+        Profile profile = new Profile();
+        profile.setUserId(userId);
+        profile.setNum(0);
+        profile.setSum(0);
+
+        // month 배열 초기화 (31개의 0)
+        List<Integer> month = new ArrayList<>();
+        for (int i = 0; i < 31; i++) {
+            month.add(0);
+        }
+        profile.setMonth(month.toString());
+
+        return profileRepository.save(profile);
+    }
+
+    private List<Integer> parseMonth(String monthJson) {
+        List<Integer> month = new ArrayList<>();
+        if (monthJson != null) {
+            monthJson = monthJson.replace("[", "").replace("]", "");
+            String[] values = monthJson.split(",");
+            for (String value : values) {
+                month.add(value.trim().equals("null") ? 0 : Integer.parseInt(value.trim()));
+            }
+        } else {
+            for (int i = 0; i < 31; i++) {
+                month.add(0);
+            }
+        }
+        return month;
     }
 }
