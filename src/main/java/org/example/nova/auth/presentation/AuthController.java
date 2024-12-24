@@ -1,8 +1,7 @@
 package org.example.nova.auth.presentation;
 
 import jakarta.servlet.http.HttpSession;
-import org.example.nova.user.entity.User;
-import org.example.nova.user.service.UserService;
+import org.example.nova.auth.entity.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,8 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
-
-    private final UserService userService;
 
     @GetMapping
     public ResponseEntity<LoginResponseDto> getLoginUser(HttpSession session) {
