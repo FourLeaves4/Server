@@ -13,13 +13,12 @@ import org.example.nova.home.entity.Mission;
 import org.example.nova.home.entity.Profile;
 import org.example.nova.home.repository.MissionRepository;
 import org.example.nova.home.repository.ProfileRepository;
-import org.example.nova.user.entity.User;
-import org.example.nova.user.repository.UserRepository;
+import org.example.nova.auth.entity.User;
+import org.example.nova.auth.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -71,9 +70,9 @@ public class HomeService {
 
         String[] A = {"😀 js에 대해 공부하기", "📘 React에 대해 공부하기", "💻 FE에 대해 탐색하기", "✏️ 코딩테스트 1개 풀기", "📑 TIL 올리기"};
         String[] B = {"😀 java에 대해 공부하기", "📘 Spring에 대해 공부하기", "💻 BE에 대해 탐색하기", "✏️ 코딩테스트 1개 풀기", "📑 TIL 올리기"};
-        String[] C = {"😀 swift에 대해 공부하기", "📘 Xcode 사용하기", "💻 IOS에 대해 탐색하기", "✏️ 코딩테스트 1개 풀기", "📑 TIL 올리기"};
-        String[] D = {"😀 kotlin에 대해 공부하기", "📘 AndroidStudio 사용하기", "💻 AOS에 대해 탐색하기", "✏️ 코딩테스트 1개 풀기", "📑 TIL 올리기"};
-        String[] N = {"😀 전공 조사하기", "📘 개발 언어 선택하기", "💻 개발 환경 설치하기", "🐱‍⬛ Git에 대해 공부하기", "📑 TIL 올리기"};
+        String[] C = {"😀 swift에 대해 공부하기", "📘 UI 구성 공부하기", "💻 IOS에 대해 탐색하기", "✏️ 코딩테스트 1개 풀기", "📑 TIL 올리기"};
+        String[] D = {"😀 kotlin에 대해 공부하기", "📘 Compose 구성 공부하기", "💻 AOS에 대해 탐색하기", "✏️ 코딩테스트 1개 풀기", "📑 TIL 올리기"};
+        String[] N = {"😀 전공 조사하기", "📘 개발 언어 선택하기", "💻 개발 환경 설치하기", "🐱‍ Git에 대해 공부하기", "📑 TIL 올리기"};
 
         if (home.isPresent() && user.isPresent()) {
             Mission mission = home.get();

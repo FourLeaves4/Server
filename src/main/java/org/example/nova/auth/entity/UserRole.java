@@ -1,4 +1,4 @@
-package org.example.nova.user.entity;
+package org.example.nova.auth.entity;
 
 public enum UserRole {
     USER, ADMIN

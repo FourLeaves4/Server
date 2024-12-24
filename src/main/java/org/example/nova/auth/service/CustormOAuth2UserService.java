@@ -6,13 +6,13 @@ import java.util.Collections;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.nova.auth.details.CustormOAuth2UserDetails;
+import org.example.nova.auth.details.CustomOAuth2UserDetails;
 import org.example.nova.auth.details.GoogleUserDetails;
 import org.example.nova.home.entity.Profile;
-import org.example.nova.user.entity.User;
-import org.example.nova.user.entity.UserRole;
+import org.example.nova.auth.entity.User;
+import org.example.nova.auth.entity.UserRole;
 import org.example.nova.auth.info.OAuth2UserInfo;
-import org.example.nova.user.repository.UserRepository;
+import org.example.nova.auth.repository.UserRepository;
 import org.example.nova.home.entity.Mission;
 import org.example.nova.home.repository.MissionRepository;
 import org.example.nova.home.repository.ProfileRepository;
@@ -105,6 +105,6 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
             session.setAttribute("member", user);
         }
 
-        return new CustormOAuth2UserDetails(user, oAuth2User.getAttributes());
+        return new CustomOAuth2UserDetails(user, oAuth2User.getAttributes());
     }
 }
