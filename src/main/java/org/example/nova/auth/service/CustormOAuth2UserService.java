@@ -69,7 +69,7 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
 
             Mission mission = new Mission();
             mission.setUserId(user.getUserId());
-            mission.setLevel(0);
+            mission.setLevel(1);
 
             Profile profile = new Profile();
             profile.setUserId(user.getUserId());

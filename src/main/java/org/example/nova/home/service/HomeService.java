@@ -154,7 +154,7 @@ public class HomeService {
 
         profile.setSum(month.stream().mapToInt(Integer::intValue).sum());
         profile.setNum(profile.getSum() % 6);
-        int level = profile.getSum() / 5;
+        int level = (profile.getSum() / 5)+1;
 
         profile.setMonth(month.toString());
         profileRepository.save(profile);
