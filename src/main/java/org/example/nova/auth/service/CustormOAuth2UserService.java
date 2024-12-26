@@ -16,6 +16,7 @@ import org.example.nova.auth.repository.UserRepository;
 import org.example.nova.home.entity.Mission;
 import org.example.nova.home.repository.MissionRepository;
 import org.example.nova.home.repository.ProfileRepository;
+import org.example.nova.token.JwtTokenProvider;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -29,6 +30,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @RequiredArgsConstructor
 public class CustormOAuth2UserService extends DefaultOAuth2UserService {
 
+    private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final MissionRepository missionRepository;
     private final ProfileRepository profileRepository;
@@ -59,11 +61,11 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
         if (findUser == null) {
             user = User.builder()
                     .loginId(loginId)
-                    .email(email)
-                    .name(name)
-                    .provider(provider)
-                    .providerId(providerId)
+                    .name(oAuth2UserInfo.getName())
+                    .email(oAuth2UserInfo.getEmail())
                     .role(UserRole.USER)
+                    .provider(userRequest.getClientRegistration().getRegistrationId())
+                    .providerId(providerId)
                     .build();
             userRepository.save(user);
 
