@@ -1,4 +1,8 @@
 spring:
+  mvc:
+    view:
+      resolver:
+        enable: false
 
   security:
     oauth2:
@@ -24,3 +28,7 @@ spring:
       hibernate:
         ddl-auto: update
       show-sql: true
+
+jwt:
+  secret: ${jwt.secret}
+  expiration: ${jwt.expiration}
