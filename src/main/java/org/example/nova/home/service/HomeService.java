@@ -15,6 +15,8 @@ import org.example.nova.home.repository.MissionRepository;
 import org.example.nova.home.repository.ProfileRepository;
 import org.example.nova.auth.entity.User;
 import org.example.nova.auth.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,9 +25,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Collections;
 
 @Service
 public class HomeService {
+
+    private static final Logger log = LoggerFactory.getLogger(HomeService.class);
 
     private final MissionRepository missionRepository;
     private final UserRepository userRepository;
@@ -68,28 +73,45 @@ public class HomeService {
         Optional<Mission> home = missionRepository.findByUserId(userId);
         Optional<User> user = userRepository.findByUserId(userId);
 
-        String[] A = {"😀 js에 대해 공부하기", "📘 React에 대해 공부하기", "💻 FE에 대해 탐색하기", "✏️ 코딩테스트 1개 풀기", "📑 TIL 올리기"};
-        String[] B = {"😀 java에 대해 공부하기", "📘 Spring에 대해 공부하기", "💻 BE에 대해 탐색하기", "✏️ 코딩테스트 1개 풀기", "📑 TIL 올리기"};
-        String[] C = {"😀 swift에 대해 공부하기", "📘 UI 구성 공부하기", "💻 IOS에 대해 탐색하기", "✏️ 코딩테스트 1개 풀기", "📑 TIL 올리기"};
-        String[] D = {"😀 kotlin에 대해 공부하기", "📘 Compose 구성 공부하기", "💻 AOS에 대해 탐색하기", "✏️ 코딩테스트 1개 풀기", "📑 TIL 올리기"};
-        String[] N = {"😀 전공 조사하기", "📘 개발 언어 선택하기", "💻 개발 환경 설치하기", "🐱‍ Git에 대해 공부하기", "📑 TIL 올리기"};
-
         if (home.isPresent() && user.isPresent()) {
             Mission mission = home.get();
             User u = user.get();
 
-            if (missionRequestDto.getMajor() != 0) {
+            if (missionRequestDto.getMajor() != u.getMajor()) {
                 u.setMajor(missionRequestDto.getMajor());
                 userRepository.save(u);
+
+                mission.setLevel(1);
+                try {
+                    mission.setMissions(objectMapper.writeValueAsString(Collections.nCopies(5, 0))); // 5개의 미션 초기화
+                    mission.setToday(objectMapper.writeValueAsString(Collections.nCopies(5, 0))); // 오늘의 미션 초기화
+                } catch (JsonProcessingException e) {
+                    log.error("Error serializing missions or today: ", e);
+                    mission.setMissions("[]");
+                    mission.setToday("[]");
+                }
+                missionRepository.save(mission);
+
+                Profile profile = new Profile();
+                profile.setUserId(u.getUserId());
+                profile.setNum(0);
+                profile.setSum(0);
+                try {
+                    profile.setMonth(objectMapper.writeValueAsString(Collections.nCopies(31, 0)));
+                } catch (JsonProcessingException e) {
+                    log.error("Error serializing month: ", e);
+                    profile.setMonth("[]");
+                }
+                profileRepository.save(profile);
             }
 
             String[] missions;
             switch (u.getMajor()) {
-                case 1 -> missions = A;
-                case 2 -> missions = B;
-                case 3 -> missions = C;
-                case 4 -> missions = D;
-                case 5 -> missions = N;
+                case 1 -> missions = new String[]{"😀 js에 대해 공부하기", "📘 React에 대해 공부하기", "💻 FE에 대해 탐색하기", "✏️ 코딩테스트 1개 풀기", "📑 TIL 올리기"};
+                case 2 -> missions = new String[]{"😀 java에 대해 공부하기", "📘 Spring에 대해 공부하기", "💻 BE에 대해 탐색하기", "✏️ 코딩테스트 1개 풀기", "📑 TIL 올리기"};
+                case 3 -> missions = new String[]{"😀 swift에 대해 공부하기", "📘 UI 구성 공부하기", "💻 IOS에 대해 탐색하기", "✏️ 코딩테스트 1개 풀기", "📑 TIL 올리기"};
+                case 4 -> missions = new String[]{"😀 kotlin에 대해 공부하기", "📘 Compose 구성 공부하기", "💻 AOS에 대해 탐색하기", "✏️ 코딩테스트 1개 풀기", "📑 TIL 올리기"};
+                case 5 -> missions = new String[]{"😀 전공 조사하기", "📘 개발 언어 선택하기", "💻 개발 환경 설치하기", "🐱‍ Git에 대해 공부하기", "📑 TIL 올리기"};
                 default -> throw new RuntimeException("Invalid major value: " + u.getMajor());
             }
 
@@ -251,5 +273,4 @@ public class HomeService {
 
         return monthData.subList(startIndex, endIndex);
     }
-
 }
