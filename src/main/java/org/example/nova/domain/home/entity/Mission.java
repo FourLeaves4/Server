@@ -1,4 +1,4 @@
-package org.example.nova.home.entity;
+package org.example.nova.domain.home.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
