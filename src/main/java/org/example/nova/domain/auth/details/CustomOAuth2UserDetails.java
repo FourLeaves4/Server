@@ -1,6 +1,6 @@
-package org.example.nova.auth.details;
+package org.example.nova.domain.auth.details;
 
-import org.example.nova.auth.entity.User;
+import org.example.nova.domain.auth.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Map;
 
 public class CustomOAuth2UserDetails implements UserDetails, OAuth2User {
+
     private final User user;
     private final Map<String, Object> attributes;
 
@@ -70,4 +71,5 @@ public class CustomOAuth2UserDetails implements UserDetails, OAuth2User {
     public boolean isEnabled() {
         return true;
     }
+
 }
