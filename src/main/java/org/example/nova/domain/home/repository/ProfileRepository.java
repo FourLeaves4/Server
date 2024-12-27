@@ -1,6 +1,6 @@
-package org.example.nova.home.repository;
+package org.example.nova.domain.home.repository;
 
-import org.example.nova.home.entity.Profile;
+import org.example.nova.domain.home.entity.Profile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
