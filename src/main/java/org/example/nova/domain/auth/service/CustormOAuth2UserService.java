@@ -1,4 +1,4 @@
-package org.example.nova.auth.service;
+package org.example.nova.domain.auth.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -6,16 +6,16 @@ import java.util.Collections;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.nova.auth.details.CustomOAuth2UserDetails;
-import org.example.nova.auth.details.GoogleUserDetails;
-import org.example.nova.home.entity.Profile;
-import org.example.nova.auth.entity.User;
-import org.example.nova.auth.entity.UserRole;
-import org.example.nova.auth.info.OAuth2UserInfo;
-import org.example.nova.auth.repository.UserRepository;
-import org.example.nova.home.entity.Mission;
-import org.example.nova.home.repository.MissionRepository;
-import org.example.nova.home.repository.ProfileRepository;
+import org.example.nova.domain.auth.details.CustomOAuth2UserDetails;
+import org.example.nova.domain.auth.details.GoogleUserDetails;
+import org.example.nova.domain.home.entity.Profile;
+import org.example.nova.domain.auth.entity.User;
+import org.example.nova.domain.auth.entity.UserRole;
+import org.example.nova.domain.auth.info.OAuth2UserInfo;
+import org.example.nova.domain.auth.repository.UserRepository;
+import org.example.nova.domain.home.entity.Mission;
+import org.example.nova.domain.home.repository.MissionRepository;
+import org.example.nova.domain.home.repository.ProfileRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -23,6 +23,8 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
