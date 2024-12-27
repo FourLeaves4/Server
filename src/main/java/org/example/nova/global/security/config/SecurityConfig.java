@@ -1,4 +1,4 @@
-package org.example.nova.auth.config;
+package org.example.nova.global.security.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
