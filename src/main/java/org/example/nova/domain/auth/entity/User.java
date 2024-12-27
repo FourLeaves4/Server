@@ -1,4 +1,4 @@
-package org.example.nova.auth.entity;
+package org.example.nova.domain.auth.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,6 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
@@ -26,4 +27,5 @@ public class User {
     private String provider;
 
     private String providerId;
+
 }
