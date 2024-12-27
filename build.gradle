@@ -43,7 +43,13 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
+    //Maria DB
     implementation 'org.mariadb.jdbc:mariadb-java-client:3.1.0'
+
+    //MySQL
+    implementation 'mysql:mysql-connector-java'
+    runtimeOnly 'mysql:mysql-connector-java:8.0.33'
+    implementation 'mysql:mysql-connector-java:8.0.33'
 }
 
 tasks.named('test') {
