@@ -1,4 +1,4 @@
-package org.example.nova.home.dto;
+package org.example.nova.domain.home.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
