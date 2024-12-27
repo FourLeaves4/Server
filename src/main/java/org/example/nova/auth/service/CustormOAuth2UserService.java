@@ -16,7 +16,6 @@ import org.example.nova.auth.repository.UserRepository;
 import org.example.nova.home.entity.Mission;
 import org.example.nova.home.repository.MissionRepository;
 import org.example.nova.home.repository.ProfileRepository;
-import org.example.nova.token.JwtTokenProvider;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -24,13 +23,11 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class CustormOAuth2UserService extends DefaultOAuth2UserService {
 
-    private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final MissionRepository missionRepository;
     private final ProfileRepository profileRepository;
@@ -61,17 +58,17 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
         if (findUser == null) {
             user = User.builder()
                     .loginId(loginId)
-                    .name(oAuth2UserInfo.getName())
-                    .email(oAuth2UserInfo.getEmail())
-                    .role(UserRole.USER)
-                    .provider(userRequest.getClientRegistration().getRegistrationId())
+                    .email(email)
+                    .name(name)
+                    .provider(provider)
                     .providerId(providerId)
+                    .role(UserRole.USER)
                     .build();
             userRepository.save(user);
 
             Mission mission = new Mission();
             mission.setUserId(user.getUserId());
-            mission.setLevel(0);
+            mission.setLevel(1);
 
             Profile profile = new Profile();
             profile.setUserId(user.getUserId());
