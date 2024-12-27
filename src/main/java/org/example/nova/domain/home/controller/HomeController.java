@@ -1,8 +1,8 @@
-package org.example.nova.home.controller;
+package org.example.nova.domain.home.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.example.nova.home.dto.*;
-import org.example.nova.home.service.HomeService;
+import org.example.nova.domain.home.dto.*;
+import org.example.nova.domain.home.service.HomeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
