@@ -1,20 +1,20 @@
-package org.example.nova.home.service;
+package org.example.nova.domain.home.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.nova.home.dto.MissionRequestDto;
-import org.example.nova.home.dto.MissionResponseDto;
-import org.example.nova.home.dto.MissionTodayRequestDto;
-import org.example.nova.home.dto.ProfileResponseDto;
-import org.example.nova.home.dto.ProfileLevelResponseDto;
-import org.example.nova.home.dto.PlanResponseDto;
-import org.example.nova.home.entity.Mission;
-import org.example.nova.home.entity.Profile;
-import org.example.nova.home.repository.MissionRepository;
-import org.example.nova.home.repository.ProfileRepository;
-import org.example.nova.auth.entity.User;
-import org.example.nova.auth.repository.UserRepository;
+import org.example.nova.domain.home.dto.MissionRequestDto;
+import org.example.nova.domain.home.entity.Mission;
+import org.example.nova.domain.home.entity.Profile;
+import org.example.nova.domain.home.repository.MissionRepository;
+import org.example.nova.domain.home.repository.ProfileRepository;
+import org.example.nova.domain.home.dto.MissionResponseDto;
+import org.example.nova.domain.home.dto.MissionTodayRequestDto;
+import org.example.nova.domain.home.dto.ProfileResponseDto;
+import org.example.nova.domain.home.dto.ProfileLevelResponseDto;
+import org.example.nova.domain.home.dto.PlanResponseDto;
+import org.example.nova.domain.auth.entity.User;
+import org.example.nova.domain.auth.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
