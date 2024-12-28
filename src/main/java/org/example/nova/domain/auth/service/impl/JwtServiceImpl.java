@@ -19,7 +19,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
 
-    @Value("${jwt.secret}")
+    @Value("${JWT_SECRET}")
     private String secretKey;
 
     private final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 60; // 1 Hour
