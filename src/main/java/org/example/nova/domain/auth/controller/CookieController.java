@@ -44,7 +44,7 @@ public class CookieController {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSources() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("http://localhost:3000"); // 클라이언트 주소
         configuration.setAllowCredentials(true);
