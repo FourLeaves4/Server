@@ -43,7 +43,7 @@ public class CookieController {
         return ResponseEntity.status(404).body("쿠키를 찾을 수 없습니다");
     }
 
-    @Bean
+    @Bean(name = "cookieCorsConfigurationSource")
     public CorsConfigurationSource corsConfigurationSources() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("http://localhost:3000"); // 클라이언트 주소
