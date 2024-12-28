@@ -49,4 +49,5 @@ public class HomeController {
     public PlanResponseDto getPlan(@PathVariable("user_id") Long userId) {
         return homeService.getPlan(userId);
     }
+
 }
