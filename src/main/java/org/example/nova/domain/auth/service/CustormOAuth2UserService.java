@@ -108,4 +108,5 @@ public class CustormOAuth2UserService extends DefaultOAuth2UserService {
 
         return new CustomOAuth2UserDetails(user, oAuth2User.getAttributes());
     }
+
 }
