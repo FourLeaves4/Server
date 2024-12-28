@@ -27,8 +27,8 @@ public class SecurityConfig {
                 )
                 .oauth2Login(auth -> auth
                         .loginPage("/auth/login")
-                        .defaultSuccessUrl("/auth")
-                        .failureUrl("/auth/login")
+                        .defaultSuccessUrl("/auth", true)
+                        .failureUrl("/auth/login?error=true")
                         .permitAll()
                 )
                 .logout(auth -> auth.logoutUrl("/auth/logout"));
@@ -48,6 +48,7 @@ public class SecurityConfig {
         config.setAllowCredentials(true);
         config.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000/",
+                "http://127.0.0.1:3000",
                 "http://192.168.1.25:8081/",
                 "exp://192.168.1.25:8081",
                 "http://192.168.%2A.%2A/",
