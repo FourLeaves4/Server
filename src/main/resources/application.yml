@@ -43,5 +43,5 @@ spring:
       # show-sql: true
 
 jwt:
-  secret: ${jwt.secret}
-  expiration: ${jwt.expiration}
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
