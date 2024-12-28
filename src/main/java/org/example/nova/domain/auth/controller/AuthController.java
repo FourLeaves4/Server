@@ -1,5 +1,7 @@
 package org.example.nova.domain.auth.controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.example.nova.domain.auth.dto.request.LoginRequestDto;
 import org.example.nova.domain.auth.dto.response.LoginResponseDto;
 import org.example.nova.domain.auth.entity.User;
@@ -8,6 +10,7 @@ import org.example.nova.domain.auth.service.LogoutService;
 import org.example.nova.domain.auth.service.ReissueService;
 import org.example.nova.domain.auth.service.UserService;
 import org.example.nova.global.security.jwt.dto.ReissueTokenResponseDto;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +27,7 @@ public class AuthController {
     private final UserService userService;
     private final ReissueService reissueService;
     private final LogoutService logoutService;
+    private final HttpServletResponse httpServletResponse;
 
     @GetMapping("/login")
     public ResponseEntity<String> loginRedirect() {
@@ -38,12 +42,28 @@ public class AuthController {
         String accessToken = jwtService.generateAccessToken(user.getEmail());
         String refreshToken = jwtService.generateRefreshToken(user.getEmail());
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + accessToken);
+
+        Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
+        accessTokenCookie.setHttpOnly(true);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge(3600);
+        httpServletResponse.addCookie(accessTokenCookie);
+
+        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(604800);
+        httpServletResponse.addCookie(refreshTokenCookie);
+
         LoginResponseDto response = new LoginResponseDto(
                 user.getUserId(),
                 accessToken,
                 refreshToken
         );
-        return ResponseEntity.ok(response);
+
+        return ResponseEntity.ok().headers(headers).body(response);
     }
 
     @GetMapping("/login/oauth2/code/google")
