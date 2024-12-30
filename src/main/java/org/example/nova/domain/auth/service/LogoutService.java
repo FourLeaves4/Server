@@ -1,8 +1,10 @@
 package org.example.nova.domain.auth.service;
 
+import org.example.nova.domain.auth.dto.response.LogoutResponseDto;
+
 public interface LogoutService {
 
-    void logout(String token);
+    LogoutResponseDto logout(String token);
 
 }
 
