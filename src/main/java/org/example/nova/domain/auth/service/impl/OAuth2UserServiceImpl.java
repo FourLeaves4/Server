@@ -1,6 +1,7 @@
 package org.example.nova.domain.auth.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.nova.domain.auth.details.GoogleUserDetails;
 import org.example.nova.domain.auth.info.OAuth2UserInfo;
 import org.example.nova.domain.auth.service.OAuth2UserService;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class OAuth2UserServiceImpl extends DefaultOAuth2UserService implements OAuth2UserService {
 
     private final UserService userService;
@@ -30,9 +32,15 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService implements O
         String provider = userRequest.getClientRegistration().getRegistrationId();
         OAuth2UserInfo userInfo = extractUserInfo(oAuth2User, provider);
 
-        userService.findOrCreateUser(userInfo, provider);
+        try {
+            userService.findOrCreateUser(userInfo, provider);
+        } catch (Exception e) {
+            log.error("Failed to save or find user: {}", e.getMessage());
+            throw new RuntimeException("사용자 저장 또는 조회 중 오류가 발생했습니다.");
+        }
 
         return oAuth2User;
     }
+
 
 }
