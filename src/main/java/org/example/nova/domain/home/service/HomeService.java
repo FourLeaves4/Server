@@ -249,7 +249,12 @@ public class HomeService {
         startIndex = Math.max(startIndex, 0);
         endIndex = Math.min(endIndex, monthData.size());
 
-        return monthData.subList(startIndex, endIndex);
+        List<Integer> weekData = new ArrayList<>(monthData.subList(startIndex, endIndex));
+
+        while (weekData.size() < 7) {
+            weekData.add(0);
+        }
+        return weekData;
     }
 
 }
