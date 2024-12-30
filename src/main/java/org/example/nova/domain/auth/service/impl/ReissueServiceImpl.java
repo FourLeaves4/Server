@@ -17,7 +17,7 @@ public class ReissueServiceImpl implements ReissueService {
 
     public ReissueTokenResponseDto reissue(String refreshToken) {
         if (!jwtService.validateToken(refreshToken)) {
-            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
+            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN, "리프레시 토큰이 유효하지 않습니다.");
         }
 
         String email = jwtService.getEmailFromToken(refreshToken);
