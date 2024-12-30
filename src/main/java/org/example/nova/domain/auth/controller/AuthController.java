@@ -100,23 +100,21 @@ public class AuthController {
     @PostMapping("/login/callback")
     public ResponseEntity<LoginResponseDto> handleGoogleCallback(@RequestParam("code") String code) {
         try {
-            // Google에서 Access Token 요청
-            String googleToken = oAuth2Service.getGoogleAccessToken(code);
+            // Step 1: Authorization Code를 사용하여 Access Token 요청
+            String accessToken = oAuth2Service.getGoogleAccessToken(code);
 
-            // Google에서 사용자 정보 요청
-            OAuth2UserInfo userInfo = oAuth2Service.getGoogleUserInfo(googleToken);
+            // Step 2: Access Token을 사용하여 사용자 정보 요청
+            OAuth2UserInfo userInfo = oAuth2Service.getGoogleUserInfo(accessToken);
 
-            // 사용자 저장 또는 조회
+            // Step 3: 사용자 정보 저장 또는 업데이트
             User user = userService.findOrCreateUser(userInfo, "google");
 
-            // JWT 토큰 발급
-            String accessToken = jwtService.generateAccessToken(user.getEmail());
+            // Step 4: JWT 토큰 생성 및 반환
+            String jwtToken = jwtService.generateAccessToken(user.getEmail());
             String refreshToken = jwtService.generateRefreshToken(user.getEmail());
 
-            // JWT와 사용자 정보를 반환
-            return ResponseEntity.ok(new LoginResponseDto(user.getUserId(), accessToken, refreshToken));
+            return ResponseEntity.ok(new LoginResponseDto(user.getUserId(), jwtToken, refreshToken));
         } catch (Exception e) {
-            log.error("Google OAuth callback 처리 중 에러 발생: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
