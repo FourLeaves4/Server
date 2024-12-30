@@ -9,6 +9,7 @@ import org.example.nova.domain.auth.entity.User;
 import org.example.nova.domain.auth.info.OAuth2UserInfo;
 import org.example.nova.domain.auth.service.*;
 import org.example.nova.global.security.jwt.dto.ReissueTokenResponseDto;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,12 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
+    @Value("${GOOGLE_CLIENT_ID}")
+    private String clientId;
+
+    @Value("${REDIRECT_URL}")
+    private String redirectUri;
+
     private final JwtService jwtService;
     private final UserService userService;
     private final ReissueService reissueService;
@@ -29,8 +36,12 @@ public class AuthController {
 
     @GetMapping("/login")
     public ResponseEntity<String> loginRedirect() {
+        String googleLoginUrl = "https://accounts.google.com/o/oauth2/auth?client_id="
+                + clientId
+                + "&redirect_uri=" + redirectUri
+                + "&response_type=code&scope=email profile";
         return ResponseEntity.status(HttpStatus.FOUND)
-                .header("Location", "/oauth2/authorization/google")
+                .header("Location", googleLoginUrl)
                 .build();
     }
 
@@ -69,21 +80,45 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> googleOAuthCallback(@RequestParam String code) {
-        // Step 1: Google에서 Access Token 요청
+        // Google에서 Access Token 요청
         String googleToken = oAuth2Service.getGoogleAccessToken(code);
 
-        // Step 2: Google에서 사용자 정보 요청
+        // Google에서 사용자 정보 요청
         OAuth2UserInfo userInfo = oAuth2Service.getGoogleUserInfo(googleToken);
 
-        // Step 3: 사용자 저장 또는 조회
+        // 사용자 저장 또는 조회
         User user = userService.findOrCreateUser(userInfo, "google");
 
-        // Step 4: JWT 토큰 발급
+        // JWT 토큰 발급
         String accessToken = jwtService.generateAccessToken(user.getEmail());
         String refreshToken = jwtService.generateRefreshToken(user.getEmail());
 
-        // Step 5: 토큰 반환
+        // 토큰 반환
         return ResponseEntity.ok(new LoginResponseDto(user.getUserId(), accessToken, refreshToken));
+    }
+
+    @PostMapping("/login/callback")
+    public ResponseEntity<LoginResponseDto> handleGoogleCallback(@RequestParam("code") String code) {
+        try {
+            // Google에서 Access Token 요청
+            String googleToken = oAuth2Service.getGoogleAccessToken(code);
+
+            // Google에서 사용자 정보 요청
+            OAuth2UserInfo userInfo = oAuth2Service.getGoogleUserInfo(googleToken);
+
+            // 사용자 저장 또는 조회
+            User user = userService.findOrCreateUser(userInfo, "google");
+
+            // JWT 토큰 발급
+            String accessToken = jwtService.generateAccessToken(user.getEmail());
+            String refreshToken = jwtService.generateRefreshToken(user.getEmail());
+
+            // JWT와 사용자 정보를 반환
+            return ResponseEntity.ok(new LoginResponseDto(user.getUserId(), accessToken, refreshToken));
+        } catch (Exception e) {
+            log.error("Google OAuth callback 처리 중 에러 발생: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 
 
