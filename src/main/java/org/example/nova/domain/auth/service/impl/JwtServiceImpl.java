@@ -1,7 +1,6 @@
 package org.example.nova.domain.auth.service.impl;
 
 
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -9,9 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.example.nova.domain.auth.service.JwtService;
 import org.example.nova.global.security.jwt.exception.CustomException;
 import org.example.nova.global.security.jwt.exception.ErrorCode;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 
@@ -19,22 +18,17 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
 
-    @Value("${JWT_SECRET}")
-    private String secretKey;
-
-    private final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 60; // 1 Hour
-    private final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7; // 7 Day
+    private final String KEY = "${JWT_SECRET}";
+    private final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 60; // 1시간
+    private final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7; // 7일
 
     @Override
     public String generateAccessToken(String email) {
-        if (secretKey.getBytes().length < 32) {
-            throw new IllegalArgumentException("Secret key must be at least 256 bits (32 bytes) long");
-        }
         return Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION))
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .signWith(Keys.hmacShaKeyFor(KEY.getBytes(StandardCharsets.UTF_8)), SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -44,7 +38,7 @@ public class JwtServiceImpl implements JwtService {
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION))
-                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .signWith(Keys.hmacShaKeyFor(KEY.getBytes(StandardCharsets.UTF_8)), SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -52,19 +46,19 @@ public class JwtServiceImpl implements JwtService {
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
-                    .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                    .setSigningKey(Keys.hmacShaKeyFor(KEY.getBytes(StandardCharsets.UTF_8)))
                     .build()
                     .parseClaimsJws(token);
             return true;
-        } catch (JwtException e) {
-            throw new CustomException(ErrorCode.INVALID_TOKEN);
+        } catch (Exception e) {
+            return false;
         }
     }
 
     @Override
     public String getEmailFromToken(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .setSigningKey(Keys.hmacShaKeyFor(KEY.getBytes()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
@@ -74,7 +68,7 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public Date getAccessTokenExpiration(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .setSigningKey(Keys.hmacShaKeyFor(KEY.getBytes()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
@@ -84,7 +78,7 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public Date getRefreshTokenExpiration(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .setSigningKey(Keys.hmacShaKeyFor(KEY.getBytes()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
@@ -94,7 +88,7 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public String extractToken(String header) {
         if (header == null || !header.startsWith("Bearer ")) {
-            throw new CustomException(ErrorCode.INVALID_TOKEN);
+            throw new CustomException(ErrorCode.INVALID_TOKEN, "유효하지 않은 토큰입니다.");
         }
         return header.substring(7);
     }
