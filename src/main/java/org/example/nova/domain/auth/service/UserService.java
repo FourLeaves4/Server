@@ -5,7 +5,10 @@ import org.example.nova.domain.auth.info.OAuth2UserInfo;
 
 public interface UserService {
 
+    // String getGoogleEmailFromCode(String code);
+
     User findOrCreateUser(OAuth2UserInfo userInfo, String provider);
+
     User findUserByEmail(String email);
 
 }
