@@ -1,9 +1,4 @@
 spring:
-  mvc:
-    view:
-      resolver:
-        enable: false
-
   security:
     oauth2:
       client:
@@ -14,7 +9,7 @@ spring:
             scope:
               - email
               - profile
-            redirect-uri: "https://port-0-server-lz1cq56f81af005d.sel4.cloudtype.app/login/oauth2/code/google"
+            redirect-uri: ${REDIRECT_URL}
         provider:
           google:
             authorization-uri: https://accounts.google.com/o/oauth2/auth
