@@ -1,23 +1,20 @@
 package org.example.nova.domain.auth.controller;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.nova.domain.auth.dto.request.LoginRequestDto;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.nova.domain.auth.dto.response.LoginResponseDto;
+import org.example.nova.domain.auth.dto.response.LogoutResponseDto;
 import org.example.nova.domain.auth.entity.User;
-import org.example.nova.domain.auth.service.JwtService;
-import org.example.nova.domain.auth.service.LogoutService;
-import org.example.nova.domain.auth.service.ReissueService;
-import org.example.nova.domain.auth.service.UserService;
+import org.example.nova.domain.auth.info.OAuth2UserInfo;
+import org.example.nova.domain.auth.service.*;
 import org.example.nova.global.security.jwt.dto.ReissueTokenResponseDto;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import lombok.RequiredArgsConstructor;
 
 
-
+@Slf4j
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -26,6 +23,7 @@ public class AuthController {
     private final JwtService jwtService;
     private final UserService userService;
     private final ReissueService reissueService;
+    private final OAuth2Service oAuth2Service;
     private final LogoutService logoutService;
     private final HttpServletResponse httpServletResponse;
 
@@ -36,6 +34,7 @@ public class AuthController {
                 .build();
     }
 
+    /*
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequest) {
         User user = userService.findUserByEmail(loginRequest.getEmail());
@@ -66,10 +65,27 @@ public class AuthController {
         return ResponseEntity.ok().headers(headers).body(response);
     }
 
-    @GetMapping("/login/oauth2/code/google")
-    public ResponseEntity<String> googleOAuthCallback(@RequestParam String code) {
-        return ResponseEntity.ok("OAuth2 callback received");
+     */
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDto> googleOAuthCallback(@RequestParam String code) {
+        // Step 1: Google에서 Access Token 요청
+        String googleToken = oAuth2Service.getGoogleAccessToken(code);
+
+        // Step 2: Google에서 사용자 정보 요청
+        OAuth2UserInfo userInfo = oAuth2Service.getGoogleUserInfo(googleToken);
+
+        // Step 3: 사용자 저장 또는 조회
+        User user = userService.findOrCreateUser(userInfo, "google");
+
+        // Step 4: JWT 토큰 발급
+        String accessToken = jwtService.generateAccessToken(user.getEmail());
+        String refreshToken = jwtService.generateRefreshToken(user.getEmail());
+
+        // Step 5: 토큰 반환
+        return ResponseEntity.ok(new LoginResponseDto(user.getUserId(), accessToken, refreshToken));
     }
+
 
     @GetMapping
     public ResponseEntity<User> getUserInfo(@RequestHeader("Authorization") String token) {
@@ -80,9 +96,9 @@ public class AuthController {
     }
 
     @DeleteMapping("/logout")
-    public ResponseEntity<String> logout(@RequestHeader("Authorization") String token) {
-        logoutService.logout(token);
-        return ResponseEntity.ok("로그아웃 완료");
+    public ResponseEntity<LogoutResponseDto> logout(@RequestHeader("Authorization") String token) {
+        LogoutResponseDto response = logoutService.logout(token);
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/reissue")
