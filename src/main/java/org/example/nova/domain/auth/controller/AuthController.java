@@ -36,14 +36,17 @@ public class AuthController {
 
     @GetMapping("/login")
     public ResponseEntity<String> loginRedirect() {
-        String googleLoginUrl = "https://accounts.google.com/o/oauth2/auth?client_id="
-                + clientId
+        String googleLoginUrl = "https://accounts.google.com/o/oauth2/auth?"
+                + "client_id=" + clientId
                 + "&redirect_uri=" + redirectUri
-                + "&response_type=code&scope=email profile";
+                + "&response_type=code"
+                + "&scope=email profile";
+
         return ResponseEntity.status(HttpStatus.FOUND)
-                .header("Location", googleLoginUrl)
+                .header("Location", googleLoginUrl) // 정확한 리디렉션 URL 지정
                 .build();
     }
+
 
     /*
     @PostMapping("/login")
