@@ -1,8 +1,10 @@
 package org.example.nova.domain.auth.controller;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.nova.domain.auth.dto.request.LoginRequestDto;
 import org.example.nova.domain.auth.dto.response.LoginResponseDto;
 import org.example.nova.domain.auth.dto.response.LogoutResponseDto;
 import org.example.nova.domain.auth.entity.User;
@@ -10,6 +12,7 @@ import org.example.nova.domain.auth.info.OAuth2UserInfo;
 import org.example.nova.domain.auth.service.*;
 import org.example.nova.global.security.jwt.dto.ReissueTokenResponseDto;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,7 +51,7 @@ public class AuthController {
     }
 
 
-    /*
+
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequest) {
         User user = userService.findUserByEmail(loginRequest.getEmail());
@@ -79,8 +82,8 @@ public class AuthController {
         return ResponseEntity.ok().headers(headers).body(response);
     }
 
-     */
 
+ /*
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> googleOAuthCallback(@RequestParam String code) {
         // Google에서 Access Token 요청
@@ -98,7 +101,7 @@ public class AuthController {
 
         // 토큰 반환
         return ResponseEntity.ok(new LoginResponseDto(user.getUserId(), accessToken, refreshToken));
-    }
+    }  */
 
     @PostMapping("/login/callback")
     public ResponseEntity<LoginResponseDto> handleGoogleCallback(@RequestParam("code") String code) {
