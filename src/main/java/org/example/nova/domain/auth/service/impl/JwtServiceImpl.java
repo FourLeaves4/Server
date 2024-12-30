@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.nova.domain.auth.service.JwtService;
 import org.example.nova.global.security.jwt.exception.CustomException;
 import org.example.nova.global.security.jwt.exception.ErrorCode;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -18,9 +19,15 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
 
-    private final String KEY = "${JWT_SECRET}";
+    @Value("${JWT_SECRET}")
+    private String key;
+
     private final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 60; // 1시간
     private final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7; // 7일
+
+    private byte[] getSigningKey() {
+        return key.getBytes(StandardCharsets.UTF_8);
+    }
 
     @Override
     public String generateAccessToken(String email) {
@@ -28,7 +35,7 @@ public class JwtServiceImpl implements JwtService {
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION))
-                .signWith(Keys.hmacShaKeyFor(KEY.getBytes(StandardCharsets.UTF_8)), SignatureAlgorithm.HS256)
+                .signWith(Keys.hmacShaKeyFor(getSigningKey()), SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -38,7 +45,7 @@ public class JwtServiceImpl implements JwtService {
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION))
-                .signWith(Keys.hmacShaKeyFor(KEY.getBytes(StandardCharsets.UTF_8)), SignatureAlgorithm.HS256)
+                .signWith(Keys.hmacShaKeyFor(getSigningKey()), SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -46,7 +53,7 @@ public class JwtServiceImpl implements JwtService {
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
-                    .setSigningKey(Keys.hmacShaKeyFor(KEY.getBytes(StandardCharsets.UTF_8)))
+                    .setSigningKey(Keys.hmacShaKeyFor(getSigningKey()))
                     .build()
                     .parseClaimsJws(token);
             return true;
@@ -58,7 +65,7 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public String getEmailFromToken(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(KEY.getBytes()))
+                .setSigningKey(Keys.hmacShaKeyFor(getSigningKey()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
@@ -68,7 +75,7 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public Date getAccessTokenExpiration(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(KEY.getBytes()))
+                .setSigningKey(Keys.hmacShaKeyFor(getSigningKey()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
@@ -78,7 +85,7 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public Date getRefreshTokenExpiration(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(KEY.getBytes()))
+                .setSigningKey(Keys.hmacShaKeyFor(getSigningKey()))
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
@@ -92,8 +99,8 @@ public class JwtServiceImpl implements JwtService {
         }
         return header.substring(7);
     }
-
 }
+
 
 
 
