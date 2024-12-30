@@ -22,6 +22,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.startsWith("/auth/login") ||
+                path.startsWith("/auth/logout") ||
+                path.startsWith("/auth/login/callback");
+    }
+
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String authorizationHeader = request.getHeader("Authorization");
