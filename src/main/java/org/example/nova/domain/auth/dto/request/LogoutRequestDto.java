@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LogoutRequestDto {
 
-    private String accessToken;
+    private String authorization;
 
 }
