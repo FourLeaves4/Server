@@ -20,18 +20,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findOrCreateUser(OAuth2UserInfo userInfo, String provider) {
+        log.info("Google User Info: {}", userInfo);
         return userRepository.findByEmail(userInfo.getEmail())
                 .orElseGet(() -> {
-                    log.info("User not found. Creating new user: {}", userInfo.getEmail());
                     User newUser = new User();
                     newUser.setEmail(userInfo.getEmail());
                     newUser.setProvider(provider);
                     newUser.setProviderId(userInfo.getProviderId());
                     newUser.setName(userInfo.getName());
                     newUser.setRole(UserRole.USER);
+                    log.info("Saving new user: {}", newUser);
                     return userRepository.save(newUser);
                 });
     }
+
 
     @Override
     public User findUserByEmail(String email) {
